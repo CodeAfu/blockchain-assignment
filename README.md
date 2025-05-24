@@ -78,5 +78,3 @@ For Prisma file formatting
   }
 }
 ```
-
-Test
