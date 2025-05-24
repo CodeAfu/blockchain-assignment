@@ -1,9 +1,8 @@
 # Blockchain Development Assignment
 
-- Afzal
-- Rion
-- Jaedon
-- Hou Jin
+Industry: TBA
+
+Topic: Idk
 
 ## Getting Started
 
@@ -22,7 +21,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Libraries Used
 
-- shadcn (Use --legacy-peer-deps installing shadcn components)
+- shadcn (Use --legacy-peer-deps for installing shadcn components)
 - zod
 - prisma(?)
 - zustand (avoid redux pls)
