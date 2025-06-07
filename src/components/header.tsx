@@ -1,7 +1,7 @@
 import React from "react";
 import { Cuboid } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "./shadcn-ui/button";
 
 export default function Header() {
   return (
@@ -16,10 +16,10 @@ export default function Header() {
             </div>
           </Link>
           <div className="space-x-4">
-            <Button asChild variant="link" className="p-0">
+            <Button asChild variant="link" className="p-0 text-white">
               <Link href="/">Home</Link>
             </Button>
-            <Button asChild variant="link" className="p-0">
+            <Button asChild variant="link" className="p-0 text-white">
               <Link href="/sample">Sample</Link>
             </Button>
           </div>
