@@ -1,8 +1,8 @@
 # Blockchain Development Assignment
 
-Industry: Protect Digital Assets using NFTs and stuff something like that
+Industry: Media
 
-Topic: Media
+Topic: Protect Digital Assets using NFTs and stuff something like that
 
 ## Getting Started
 
@@ -12,6 +12,40 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Workflow
+
+```bash
+# 1. Start on up-to-date main
+git checkout main
+git pull origin main
+
+# 2. Create a new branch for your feature
+git checkout -b feature/login-form
+
+# 3. Work locally, stage, and commit
+git add .
+git commit -m "Implement login form UI"
+
+# 4. Push the feature branch
+git push -u origin feature/login-form
+
+# 5. Open a Pull Request (on GitHub)
+#    - Describe changes
+#    - Link issues if any (#42)
+#    - Assign reviewers
+
+# 6. Address feedback, commit more if needed
+git commit -m "Apply feedback: improved error handling"
+git push
+
+# 7. Once approved, PR is merged by owner
+#    (Optionally squash and merge)
+
+# 8. Sync with main after merge
+git checkout main
+git pull origin main
+```
 
 ## Libraries Used
 
