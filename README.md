@@ -1,20 +1,14 @@
 # Blockchain Development Assignment
 
-Industry: TBA
+Industry: Protect Digital Assets using NFTs and stuff something like that
 
-Topic: Idk
+Topic: Media
 
 ## Getting Started
 
 ```bash
 npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
