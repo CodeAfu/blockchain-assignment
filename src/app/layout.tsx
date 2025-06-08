@@ -7,8 +7,8 @@ import Header from "@/components/header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "My Blockchain App",
-  description: "asdf",
+  title: "MediaVault",
+  description: "Register and prove ownership of digital media with MediaVault — a decentralized platform for creators to store metadata and IPFS links on the Ethereum blockchain.",
 };
 
 export default function RootLayout({
