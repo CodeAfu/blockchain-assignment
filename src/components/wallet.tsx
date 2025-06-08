@@ -2,13 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "./shadcn-ui/button";
-import { MetaMaskInpageProvider } from "@metamask/providers";
-
-declare global {
-  interface Window {
-    ethereum?: MetaMaskInpageProvider;
-  }
-}
 
 export default function Wallet() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);

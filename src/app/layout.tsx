@@ -3,12 +3,19 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/providers";
 import Header from "@/components/header";
+import { MetaMaskInpageProvider } from "@metamask/providers";
 
 const inter = Inter({ subsets: ["latin"] });
+declare global {
+  interface Window {
+    ethereum?: MetaMaskInpageProvider;
+  }
+}
 
 export const metadata: Metadata = {
   title: "MediaVault",
-  description: "Register and prove ownership of digital media with MediaVault — a decentralized platform for creators to store metadata and IPFS links on the Ethereum blockchain.",
+  description:
+    "Register and prove ownership of digital media with MediaVault — a decentralized platform for creators to store metadata and IPFS links on the Ethereum blockchain.",
 };
 
 export default function RootLayout({
@@ -20,7 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <Providers>
-        <Header />
+          <Header />
           {children}
         </Providers>
       </body>
