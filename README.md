@@ -47,6 +47,15 @@ git checkout main
 git pull origin main
 ```
 
+## Features
+- Display Wallet Info
+- Register Media
+- Prove Ownership
+- Transfer Ownership
+- View Media
+- View Media History
+- Automatic Royalty Enrollment
+
 ## Libraries Used
 
 - shadcn (Use --legacy-peer-deps for installing shadcn components)

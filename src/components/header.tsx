@@ -3,6 +3,7 @@ import { Cuboid } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./shadcn-ui/button";
 import Wallet from "./wallet";
+import { WalletProvider } from "@/contexts/wallet-provider";
 
 export default function Header() {
   return (
@@ -29,7 +30,9 @@ export default function Header() {
           </div>
         </div>
         {/* Right */}
-        <Wallet />
+        <WalletProvider>
+          <Wallet />
+        </WalletProvider>
       </div>
     </nav>
   );
