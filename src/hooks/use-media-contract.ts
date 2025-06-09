@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { MEDIA_CONTRACT_ABI, MEDIA_CONTRACT_ADDRESS } from "@/lib/consts";
 
 export async function useMediaContract() {
-  if (typeof window === "undefined" || typeof window.ethereum === "undefined") {
+  if (typeof window.ethereum === "undefined") {
     throw new Error("MetaMask not detected.");
   }
 

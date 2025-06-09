@@ -3,7 +3,7 @@ import { Cuboid } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./shadcn-ui/button";
 import Wallet from "./wallet";
-import { WalletProvider } from "@/contexts/wallet-provider";
+import { WalletProvider } from "@/contexts/wallet-context";
 
 export default function Header() {
   return (
@@ -22,7 +22,7 @@ export default function Header() {
               <Link href="/">Home</Link>
             </Button>
             <Button asChild variant="link" className="p-0 text-foreground">
-              <Link href="/media/add">Register Media</Link>
+              <Link href="/media">Register Media</Link>
             </Button>
             <Button asChild variant="link" className="p-0 text-foreground">
               <Link href="/sample">Sample</Link>

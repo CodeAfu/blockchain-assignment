@@ -4,7 +4,7 @@ import { useContext, useEffect, useState, createContext } from "react";
 
 interface WalletContextProps {
   walletAddress: string | null;
-  isMetaMaskInstalled: boolean;
+  isMetaMaskInstalled: boolean | undefined;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
 }
@@ -13,7 +13,7 @@ const WalletContext = createContext<WalletContextProps | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [isMetaMaskInstalled] = useState<boolean>(typeof window.ethereum !== undefined);
+  const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState<boolean | undefined>();
 
   const connectWallet = async () => {
     if (typeof window.ethereum === "undefined") {
@@ -38,6 +38,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    setIsMetaMaskInstalled(typeof window.ethereum !== "undefined");
+
     const handleAccountChanged = (...args: unknown[]) => {
       const accounts = args[0] as string[];
       if (accounts.length > 0) {

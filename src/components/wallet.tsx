@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "./shadcn-ui/button";
 import Link from "next/link";
-import { useWallet } from "@/contexts/wallet-provider";
+import { useWallet } from "@/contexts/wallet-context";
 
 export default function Wallet() {
   const { walletAddress, isMetaMaskInstalled, connectWallet, disconnectWallet } = useWallet();
