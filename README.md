@@ -47,6 +47,10 @@ git checkout main
 git pull origin main
 ```
 
+## Helpers (Pls use)
+- useWallet: **Wallet Context Provider** with hopefully all the tools you need to control the wallet 🔨
+- useContract: **Media Contract Context Provider** - connect smart contract to the frontend and provides the `provider`, `signer`, and `contract` variables
+
 ## Features
 - Display Wallet Info
 - Register Media
