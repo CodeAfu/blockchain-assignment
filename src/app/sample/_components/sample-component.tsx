@@ -22,7 +22,7 @@ export default function SampleComponent() {
       return;
     }
 
-    const royaltyFee = ethers.parseEther(royaltyInput); // Converts from "0.01" -> wei
+    // const royaltyFee = ethers.parseEther(royaltyInput); // Converts from "0.01" -> wei
 
     try {
       const tx = await contract.registerMedia(title, ipfsHash, ethers.parseEther("0.01"));
