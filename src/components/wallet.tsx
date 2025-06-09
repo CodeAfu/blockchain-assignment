@@ -1,35 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button } from "./shadcn-ui/button";
+import Link from "next/link";
+import { useWallet } from "@/contexts/wallet-provider";
 
 export default function Wallet() {
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState<boolean | undefined>();
-
-  const connectWallet = async () => {
-    if (typeof window.ethereum === "undefined") {
-      return;
-    }
-    try {
-      const accounts: string[] = (await window.ethereum.request({
-        method: "eth_requestAccounts",
-      })) as string[];
-
-      if (accounts === null || accounts === undefined) {
-        console.error("No accounts found in MetaMask");
-        return;
-      }
-
-      setWalletAddress(accounts[0]);
-    } catch (err) {
-      console.error("Error connecting to MetaMask:", err);
-    }
-  };
-
-  useEffect(() => {
-    setIsMetaMaskInstalled(typeof window.ethereum !== "undefined");
-  }, []);
+  const { walletAddress, isMetaMaskInstalled, connectWallet, disconnectWallet } = useWallet();
 
   return (
     <div>
@@ -38,7 +15,7 @@ export default function Wallet() {
         walletAddress ? (
           // This should be a Dropdown
           <div className="flex flex-row-reverse items-center justify-center gap-3">
-            <Button onClick={() => setWalletAddress(null)}>Disconnect</Button>
+            <Button onClick={disconnectWallet}>Disconnect</Button>
             <p className="text-sm">Connected to: {walletAddress}</p>
           </div>
         ) : (
@@ -47,7 +24,16 @@ export default function Wallet() {
       ) : (
         <div className="max-w-36 text-xs">
           <p>
-            Please install <strong className="text-primary">MetaMask</strong> to connect to the app
+            Please install{" "}
+            <strong className="text-primary hover:underline">
+              <Link
+                href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
+                target="_blank"
+              >
+                MetaMask
+              </Link>
+            </strong>{" "}
+            to connect
           </p>
         </div>
       )}
