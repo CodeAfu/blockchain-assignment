@@ -8,18 +8,25 @@ interface MediaContractProps {
   contract: Contract;
 }
 
-const ContractContext = createContext<MediaContractProps | undefined>(undefined);
+const MediaContractContext = createContext<MediaContractProps | undefined>(undefined);
 
-export function ContractProvider({ children }: { children: React.ReactNode }) {
+export function MediaContractProvider({ children }: { children: React.ReactNode }) {
   const [contractState, setContractState] = useState<MediaContractProps>();
+  const [hasMetaMask, setHasMetaMask] = useState<boolean | undefined>();
 
   useEffect(() => {
     const init = async () => {
-      if (typeof window === "undefined" || !window.ethereum) return;
+      if (typeof window.ethereum === "undefined") {
+        setHasMetaMask(false);
+        return;
+      }
 
+      setHasMetaMask(true);
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(MEDIA_CONTRACT_ADDRESS, MEDIA_CONTRACT_ABI, signer);
+
+      console.log({ provider, signer, contract });
 
       setContractState({ provider, signer, contract });
     };
@@ -27,13 +34,21 @@ export function ContractProvider({ children }: { children: React.ReactNode }) {
     init();
   }, []);
 
-  if (!contractState) return null;
+  if (!hasMetaMask) {
+    return <div>Please Install MetaMask to Continue</div>
+  }
 
-  return <ContractContext.Provider value={contractState}>{children}</ContractContext.Provider>;
+  if (!contractState) {
+    return <div>Loading Web3...</div>;
+  }
+
+  return (
+    <MediaContractContext.Provider value={contractState}>{children}</MediaContractContext.Provider>
+  );
 }
 
-export function useContract() {
-  const context = useContext(ContractContext);
+export function useMediaContract() {
+  const context = useContext(MediaContractContext);
   if (!context) {
     throw new Error("useContract must be used within a ContractProvider.");
   }
