@@ -6,6 +6,7 @@ import Header from "@/components/header";
 import { MetaMaskInpageProvider } from "@metamask/providers";
 
 const inter = Inter({ subsets: ["latin"] });
+
 declare global {
   interface Window {
     ethereum?: MetaMaskInpageProvider;
