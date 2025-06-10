@@ -13,7 +13,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Workflow
+## Git Workflow
 
 ```bash
 # 1. Start on up-to-date main
@@ -48,25 +48,64 @@ git pull origin main
 ```
 
 ## Helpers (Pls use)
-- useWallet: **Wallet Context Provider** with hopefully all the tools you need to control the wallet 🔨
-- useContract: **Media Contract Context Provider** - connect smart contract to the frontend and provides the `provider`, `signer`, and `contract` variables
+
+- `useWallet()`: **Wallet Context Provider** with hopefully all the tools you need to control the wallet 🔨
+- `useMediaContract()`: **Media Contract Context Provider** - connect smart contract to the frontend and provides the `provider`, `signer`, and `contract` variables
+
+## Run with Smart Contract
+
+1. Open new VSCode and open smart_contract project **OR** cd o smart_contract project via terminal
+
+2. In smart contract project, execute these:
+
+```bash
+# Open 2 Terminals
+# In Terminal 1 (do not close this terminal):
+npm run node
+
+# In Terminal 2:
+npm run deploy
+```
+
+3. Use ethers library in the frontend project to initialize these variables:
+
+```tsx
+import { MEDIA_CONTRACT_ABI, MEDIA_CONTRACT_ADDRESS } from "@/lib/consts";
+
+// provider: idk 💀
+// signer: idk 💀
+// contract: Access methods defined in smart contract
+const provider = new ethers.BrowserProvider(window.ethereum);
+const signer = await provider.getSigner();
+const contract = new ethers.Contract(MEDIA_CONTRACT_ADDRESS, MEDIA_CONTRACT_ABI, signer);
+```
+
+4. Optionally, use the predefined `useMediaContract()` context for easier access (react context hook)
+
+[View Sample Contract Usage](./src/app/sample/_components/sample-component.tsx)
+
+## Update Smart Contract:
+
+Tired rn
 
 ## Features
-- Display Wallet Info
-- Register Media
-- Prove Ownership
-- Transfer Ownership
-- View Media
-- View Media History
-- Automatic Royalty Enrollment
+
+- Mint NFT for Media Uploaded (image, audio, video) []
+- Display Wallet Info []
+- Register Media []
+- View Media Details []
+- View Media Upload History []
+- Automatic Royalty Enrollment []
+- Transfer Ownership []
+- Prove Ownership []
 
 ## Libraries Used
 
 - shadcn (Use --legacy-peer-deps for installing shadcn components)
 - zod
-- prisma(?)
 - zustand (avoid redux pls)
-- tanstack react query
+- prisma(?)
+- tanstack react query (?)
 
 ## Tech Stack
 

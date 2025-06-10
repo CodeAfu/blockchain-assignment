@@ -35,7 +35,7 @@ export default function SampleComponent() {
   };
 
   return (
-    <div className="bg-red-800 flex flex-col w-fit gap-4 p-4 rounded-md">
+    <div className="bg-slate-400 flex flex-col w-fit gap-4 p-4 rounded-md">
       <form className="grid grid-cols-2 items-center gap-2">
         <label htmlFor="title">Title:</label>
         <input name="title" ref={titleRef} type="text" className="p-1" />
