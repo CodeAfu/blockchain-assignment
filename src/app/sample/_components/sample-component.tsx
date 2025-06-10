@@ -22,10 +22,10 @@ export default function SampleComponent() {
       return;
     }
 
-    // const royaltyFee = ethers.parseEther(royaltyInput); // Converts from "0.01" -> wei
+    const royaltyFee = ethers.parseEther(royaltyInput); // Converts from "0.01" -> wei
 
     try {
-      const tx = await contract.registerMedia(title, ipfsHash, ethers.parseEther("0.01"));
+      const tx = await contract.registerMedia(title, ipfsHash, royaltyFee);
       await tx.wait();
       alert("Media Registered");
     } catch (error) {
@@ -41,7 +41,7 @@ export default function SampleComponent() {
         <input name="title" ref={titleRef} type="text" className="p-1" />
         <label htmlFor="title">IPFS Hash(??????????):</label>
         <input name="title" ref={ipfsRef} type="text" className="p-1" />
-        <label htmlFor="title">Royalty Fee (This doesnt do anything):</label>
+        <label htmlFor="title">Royalty Fee:</label>
         <input name="title" ref={royaltyRef} type="number" className="p-1" />
       </form>
       Test Smart Contract

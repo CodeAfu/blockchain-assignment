@@ -13,6 +13,12 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Tasks
+
+- Create page to upload media files
+- Create React component that tracks wallet information
+- Mint NFT with uploaded media files
+
 ## Git Workflow
 
 ```bash
@@ -90,7 +96,7 @@ Tired rn
 
 ## Features
 
-- Mint NFT for Media Uploaded (image, audio, video) []
+- Mint NFT for Media Uploaded []
 - Display Wallet Info []
 - Register Media []
 - View Media Details []

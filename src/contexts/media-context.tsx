@@ -35,7 +35,7 @@ export function MediaContractProvider({ children }: { children: React.ReactNode 
   }, []);
 
   if (!hasMetaMask) {
-    return <div>Please Install MetaMask to Continue</div>
+    return <div>Please Install MetaMask to Continue</div>;
   }
 
   if (!contractState) {
