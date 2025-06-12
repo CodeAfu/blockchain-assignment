@@ -7,7 +7,7 @@ import { WalletProvider } from "@/contexts/wallet-context";
 
 export default function Header() {
   return (
-    <nav className="flex items-center justify-center p-4 bg-slate-700/10 h-20">
+    <nav className="flex items-center justify-center p-4 bg-slate-500/10 h-20">
       <div className="max-w-7xl w-full flex items-center justify-between">
         {/* Left */}
         <div className="flex gap-8 items-center">
