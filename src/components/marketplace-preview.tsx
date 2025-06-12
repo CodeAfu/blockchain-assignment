@@ -48,7 +48,9 @@ export default function MarketplacePreview() {
     switch (nft.mediaType) {
       case "image":
         return (
-          <img src={nft.mediaUrl} alt={nft.name} className="w-full h-48 object-cover rounded" />
+          <div className="relative w-full h-48 rounded overflow-hidden">
+            <Image src={nft.mediaUrl} alt={nft.name} fill className="object-cover" />
+          </div>
         );
       case "video":
         return <video src={nft.mediaUrl} controls className="w-full h-48 rounded" />;
@@ -65,12 +67,12 @@ export default function MarketplacePreview() {
   };
 
   return (
-    <section className="py-16 px-6 bg-gray-100">
+    <section className="py-16 px-6 bg-background/10">
       <Container>
         <h2 className="text-3xl font-bold text-center mb-10">Featured Media</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {nfts.map(nft => (
-            <div key={nft.id} className="bg-white rounded-xl shadow p-4">
+            <div key={nft.id} className="bg-white dark:bg-purple-950 rounded-xl shadow p-4">
               {renderMedia(nft)}
               <div className="mt-4">
                 <h3 className="text-xl font-semibold">{nft.name}</h3>

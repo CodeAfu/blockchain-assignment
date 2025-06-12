@@ -19,7 +19,7 @@ export default function Wallet() {
             <p className="text-sm">Connected to: {walletAddress}</p>
           </div>
         ) : (
-          <Button onClick={connectWallet}>Connect Wallet</Button>
+          <Button onClick={connectWallet}>Connect</Button>
         )
       ) : (
         <div className="max-w-36 text-xs">
@@ -29,6 +29,7 @@ export default function Wallet() {
               <Link
                 href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 MetaMask
               </Link>
