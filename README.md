@@ -53,6 +53,22 @@ git checkout main
 git pull origin main
 ```
 
+## Useful Terminal Commands
+
+```bash
+# Create postgres docker container
+docker run --name local-mediavault-db -e POSTGRES_USER=localuser -e POSTGRES_PASSWORD=localpass -e POSTGRES_DB=localdb -p 5432:5432 -d postgres
+
+# Generate prisma schema
+npx prisma generate
+
+# Prisma migrate
+npx prisma migrate dev --name init
+
+# View database via prisma UI
+npx prisma studio
+```
+
 ## Helpers (Pls use)
 
 - `useWallet()`: **Wallet Context Provider** with hopefully all the tools you need to control the wallet 🔨
