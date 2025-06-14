@@ -112,14 +112,14 @@ Tired rn
 
 ## Features
 
-- Mint NFT for Media Uploaded []
-- Display Wallet Info []
-- Register Media []
-- View Media Details []
-- View Media Upload History []
-- Automatic Royalty Enrollment []
-- Transfer Ownership []
-- Prove Ownership []
+- Mint NFT for Media Uploaded [❌]
+- Display Wallet Info [🔨]
+- Register Media [❌]
+- View Media Details [❌]
+- View Media Upload History [❌]
+- Automatic Royalty Enrollment [❌]
+- Prove Ownership [❓]
+- Transfer Ownership [❓]
 
 ## Libraries Used
 
