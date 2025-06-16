@@ -42,6 +42,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
     const handleAccountChanged = (...args: unknown[]) => {
       const accounts = args[0] as string[];
+      console.log(accounts);
       if (accounts.length > 0) {
         setWalletAddress(accounts[0]);
       } else {

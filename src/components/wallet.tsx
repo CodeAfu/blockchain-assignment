@@ -7,13 +7,10 @@ import { useWallet } from "@/contexts/wallet-context";
 
 export default function Wallet() {
   const { walletAddress, isMetaMaskInstalled, connectWallet, disconnectWallet } = useWallet();
-
   return (
     <div>
-      {/* Conditionally Render Stuff */}
       {isMetaMaskInstalled ? (
         walletAddress ? (
-          // This should be a Dropdown
           <div className="flex flex-row-reverse items-center justify-center gap-3">
             <Button onClick={disconnectWallet}>Disconnect</Button>
             <p className="text-sm">Connected to: {walletAddress}</p>
