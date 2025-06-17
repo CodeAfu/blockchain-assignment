@@ -1,17 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { getQueryClient } from "@/lib/get-query-client";
 import { ThemeProvider } from "./theme-provider";
+import { WagmiContextProvider } from "@/contexts/web3-context";
 
-interface QueryProviderProps {
+interface ProvidersProps {
   children: React.ReactNode;
+  cookies: string | null;
 }
 
-export default function Providers({ children }: Readonly<QueryProviderProps>) {
+export default function Providers({ children, cookies }: Readonly<ProvidersProps>) {
   const [mounted, setMounted] = useState(false);
-  const queryClient = getQueryClient();
 
   useEffect(() => {
     setMounted(true);
@@ -24,7 +23,7 @@ export default function Providers({ children }: Readonly<QueryProviderProps>) {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <WagmiContextProvider cookies={cookies}>{children}</WagmiContextProvider>
     </ThemeProvider>
   );
 }
