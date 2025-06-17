@@ -1,6 +1,6 @@
 "use client";
 
-import { wagmiAdapter, projectId } from "@/lib/web3config";
+import { wagmiAdapter, projectId } from "@/lib/web3-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createAppKit } from "@reown/appkit/react";
 import { mainnet, arbitrum, hardhat } from "@reown/appkit/networks";

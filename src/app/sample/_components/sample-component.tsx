@@ -42,19 +42,21 @@ export default function SampleComponent() {
     );
 
   return (
-    <div className="bg-slate-400 flex flex-col w-fit gap-4 p-4 rounded-md">
-      <form className="grid grid-cols-2 items-center gap-2">
-        <label htmlFor="title">Title:</label>
-        <input name="title" ref={titleRef} type="text" className="p-1" />
-        <label htmlFor="title">IPFS Hash(??????????):</label>
-        <input name="title" ref={ipfsRef} type="text" className="p-1" />
-        <label htmlFor="title">Royalty Fee:</label>
-        <input name="title" ref={royaltyRef} type="number" className="p-1" />
-      </form>
-      Test Smart Contract
-      <Button variant="secondary" onClick={registerMedia}>
-        Register
-      </Button>
+    <div className="flex flex-col items-center">
+      <div className="bg-slate-400 flex flex-col w-fit gap-4 p-4 rounded-md">
+        <form className="grid grid-cols-2 items-center gap-2">
+          <label htmlFor="title">Title:</label>
+          <input name="title" ref={titleRef} type="text" className="p-1" />
+          <label htmlFor="title">IPFS Hash(??????????):</label>
+          <input name="title" ref={ipfsRef} type="text" className="p-1" />
+          <label htmlFor="title">Royalty Fee:</label>
+          <input name="title" ref={royaltyRef} type="number" className="p-1" />
+        </form>
+        Test Smart Contract
+        <Button variant="secondary" onClick={registerMedia}>
+          Register
+        </Button>
+      </div>
     </div>
   );
 }
