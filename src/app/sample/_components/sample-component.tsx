@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/shadcn-ui/button";
-import { useMediaContract } from "@/contexts/media-context";
+import { useMediaContract } from "@/hooks/use-media-contract";
+import { useAppKitAccount } from "@reown/appkit/react";
 import { ethers } from "ethers";
 import React, { useRef } from "react";
 
@@ -9,8 +10,8 @@ export default function SampleComponent() {
   const titleRef = useRef<HTMLInputElement | null>(null);
   const ipfsRef = useRef<HTMLInputElement | null>(null);
   const royaltyRef = useRef<HTMLInputElement | null>(null);
-
-  const { contract } = useMediaContract();
+  const contract = useMediaContract();
+  const { isConnected } = useAppKitAccount();
 
   const registerMedia = async () => {
     const title = titleRef.current?.value;
@@ -25,14 +26,20 @@ export default function SampleComponent() {
     const royaltyFee = ethers.parseEther(royaltyInput); // Converts from "0.01" -> wei
 
     try {
-      const tx = await contract.registerMedia(title, ipfsHash, royaltyFee);
-      await tx.wait();
-      alert("Media Registered");
+      if (!contract) return;
+      await contract.registerMedia(title, ipfsHash, royaltyFee);
     } catch (error) {
       console.error("Registration failed:", error);
-      alert("Error registering media");
+      alert("Error Registering Media. See console logs for more info");
     }
   };
+
+  if (!isConnected)
+    return (
+      <div className="flex flex-col gap-4 items-center justify-center">
+        <h2 className="font-semibold underline text-red-500">Please Connect to MetaMask</h2>
+      </div>
+    );
 
   return (
     <div className="bg-slate-400 flex flex-col w-fit gap-4 p-4 rounded-md">

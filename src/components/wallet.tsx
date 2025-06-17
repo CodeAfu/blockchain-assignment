@@ -2,41 +2,33 @@
 
 import React from "react";
 import { Button } from "./shadcn-ui/button";
-import Link from "next/link";
-import { useWallet } from "@/contexts/wallet-context";
+import { useAppKit, useAppKitAccount, useDisconnect } from "@reown/appkit/react";
 
 export default function Wallet() {
-  const { walletAddress, isMetaMaskInstalled, connectWallet, disconnectWallet } = useWallet();
+  const { open } = useAppKit();
+  const { address, isConnected } = useAppKitAccount();
+  const { disconnect } = useDisconnect();
+
+  const handleConnect = () => {
+    open({
+      view: "Connect",
+      namespace: "eip155",
+    });
+  };
+
+  const handleDisconnect = async () => {
+    await disconnect();
+  };
 
   return (
     <div>
-      {/* Conditionally Render Stuff */}
-      {isMetaMaskInstalled ? (
-        walletAddress ? (
-          // This should be a Dropdown
-          <div className="flex flex-row-reverse items-center justify-center gap-3">
-            <Button onClick={disconnectWallet}>Disconnect</Button>
-            <p className="text-sm">Connected to: {walletAddress}</p>
-          </div>
-        ) : (
-          <Button onClick={connectWallet}>Connect</Button>
-        )
-      ) : (
-        <div className="max-w-36 text-xs">
-          <p>
-            Please install{" "}
-            <strong className="text-primary hover:underline">
-              <Link
-                href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                MetaMask
-              </Link>
-            </strong>{" "}
-            to connect
-          </p>
+      {isConnected ? (
+        <div className="flex flex-row-reverse items-center justify-center gap-3">
+          <Button onClick={handleDisconnect}>Disconnect</Button>
+          <p className="text-sm">Connected to: {address}</p>
         </div>
+      ) : (
+        <Button onClick={handleConnect}>Connect</Button>
       )}
     </div>
   );
