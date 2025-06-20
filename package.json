@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@metamask/providers": "^22.1.0",
-    "@prisma/client": "^6.7.0",
+    "@prisma/client": "^6.3.1",
     "@radix-ui/react-slot": "^1.2.3",
     "@reown/appkit": "^1.7.9",
     "@reown/appkit-adapter-wagmi": "^1.7.9",
@@ -42,7 +42,7 @@
     "eslint-config-next": "15.1.8",
     "postcss": "^8",
     "prettier": "^3.5.3",
-    "prisma": "^6.7.0",
+    "prisma": "^6.3.1",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",

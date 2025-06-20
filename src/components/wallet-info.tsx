@@ -1,58 +1,35 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ethers, formatEther } from "ethers";
 import { cn } from "@/lib/utils";
+import { useAppKitAccount, useAppKitBalance } from "@reown/appkit/react";
 
 const WalletInfo = ({ className, ...props }: React.ComponentProps<"div">) => {
-  const [walletAddress, setWalletAddress] = useState("");
-  const [balance, setBalance] = useState("");
-
-  // const connectWallet = async () => {
-  //   if (window.ethereum) {
-  //     try {
-  //       const accounts = (await window.ethereum.request({
-  //         method: "eth_requestAccounts",
-  //       })) as string[];
-  //       setWalletAddress(accounts[0]);
-  //       getBalance(accounts[0]);
-  //     } catch (err) {
-  //       console.error("User rejected request:", err);
-  //     }
-  //   } else {
-  //     alert("MetaMask is not installed. Please install it to use this feature.");
-  //   }
-  // };
-
-  const getBalance = async (address: string) => {
-    if (typeof window.ethereum === "undefined") {
-      return;
-    }
-
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const balance = await provider.getBalance(address);
-    const ether = formatEther(balance);
-    setBalance(ether);
-  };
+  const { address, isConnected } = useAppKitAccount();
+  const { fetchBalance } = useAppKitBalance();
+  const [balance, setBalance] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    const getAccounts = async () => {
-      if (typeof window.ethereum === "undefined") {
+    if (!isConnected) return;
+
+    const getBalance = async () => {
+      const result = await fetchBalance();
+
+      if (result.isError) {
+        console.error("Error while fetching Wallet Balance: ", result.error);
         return;
       }
 
-      const accounts = (await window.ethereum.request({
-        method: "eth_accounts",
-      })) as string[];
-
-      if (accounts.length > 0) {
-        setWalletAddress(accounts[0]);
-        getBalance(accounts[0]);
+      if (!result.data) {
+        console.error("Wallet balance not found");
       }
+
+      const balanceInEth = result.data ? Number(result.data.balance) / 1e18 : 0;
+      setBalance(parseFloat(balanceInEth.toFixed(4)));
     };
 
-    getAccounts();
-  }, []);
+    getBalance();
+  }, [isConnected, fetchBalance]);
 
   return (
     <div
@@ -61,10 +38,10 @@ const WalletInfo = ({ className, ...props }: React.ComponentProps<"div">) => {
       {...props}
     >
       <h3>Wallet Info</h3>
-      {walletAddress ? (
+      {address ? (
         <>
           <p>
-            <strong>Address:</strong> {walletAddress}
+            <strong>Address:</strong> {address}
           </p>
           <p>
             <strong>Balance:</strong> {balance ?? 0} ETH
