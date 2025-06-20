@@ -1,5 +1,6 @@
 import Container from "@/components/container";
-// import WalletInfo from "@/components/wallet-info";
+import WalletInfo from "@/components/wallet-info";
+import { AppkitContextProvider } from "@/contexts/appkit-context";
 import React from "react";
 
 export default function Test() {
@@ -8,7 +9,9 @@ export default function Test() {
       <Container className="mt-8">
         <h1>Just a page for testing stuff</h1>
         <div className="flex flex-col">
-          {/* <WalletInfo className="self-end" /> */}
+          <AppkitContextProvider>
+            <WalletInfo className="self-end" />
+          </AppkitContextProvider>
         </div>
       </Container>
     </div>

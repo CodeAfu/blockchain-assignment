@@ -1,8 +1,9 @@
 import React from "react";
-import { Cuboid } from "lucide-react";
+// import { Cuboid } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./shadcn-ui/button";
 import Wallet from "./wallet";
+import { AppkitContextProvider } from "@/contexts/appkit-context";
 
 const navLinks = [
   {
@@ -31,7 +32,7 @@ export default function Header() {
         <div className="flex gap-8 items-center">
           <Link href="/" className="">
             <div className="flex items-center space-x-4">
-              <Cuboid className="h-12 w-12" />
+              {/* <Cuboid className="h-12 w-12" /> */}
               <h1 className="text-2xl font-semibold tracking-wider">
                 <span className="relative">
                   <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary to-purple-950">
@@ -55,7 +56,9 @@ export default function Header() {
         </div>
 
         {/* Right */}
-        <Wallet />
+        <AppkitContextProvider>
+          <Wallet />
+        </AppkitContextProvider>
       </div>
     </nav>
   );

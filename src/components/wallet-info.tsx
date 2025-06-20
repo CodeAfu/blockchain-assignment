@@ -1,35 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { useAppKitAccount, useAppKitBalance } from "@reown/appkit/react";
+import { useAppKitContext } from "@/contexts/appkit-context";
 
 const WalletInfo = ({ className, ...props }: React.ComponentProps<"div">) => {
-  const { address, isConnected } = useAppKitAccount();
-  const { fetchBalance } = useAppKitBalance();
-  const [balance, setBalance] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    if (!isConnected) return;
-
-    const getBalance = async () => {
-      const result = await fetchBalance();
-
-      if (result.isError) {
-        console.error("Error while fetching Wallet Balance: ", result.error);
-        return;
-      }
-
-      if (!result.data) {
-        console.error("Wallet balance not found");
-      }
-
-      const balanceInEth = result.data ? Number(result.data.balance) / 1e18 : 0;
-      setBalance(parseFloat(balanceInEth.toFixed(4)));
-    };
-
-    getBalance();
-  }, [isConnected, fetchBalance]);
+  const { address, balance } = useAppKitContext();
 
   return (
     <div

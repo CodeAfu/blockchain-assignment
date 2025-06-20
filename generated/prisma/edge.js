@@ -147,7 +147,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../prisma",
@@ -160,13 +160,13 @@ const config = {
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "LOCAL_DATABASE_URL",
+        "fromEnvVar": "DATABASE_URL",
         "value": null
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"LOCAL_DATABASE_URL\")\n}\n\nenum MediaType {\n  audio\n  video\n  image\n}\n\nmodel Media {\n  id        String    @id @default(cuid())\n  title     String\n  creator   String\n  ipfsHash  String    @unique\n  mediaType MediaType\n  mediaUrl  String\n  updatedAt DateTime  @updatedAt @db.Timestamptz\n  createdAt DateTime  @default(now()) @db.Timestamptz\n}\n",
-  "inlineSchemaHash": "00a63ef63c46d0a1228ede5f5911d81197eb12074671af63917a0e354eaeb69e",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum MediaType {\n  audio\n  video\n  image\n}\n\nmodel Media {\n  id        String    @id @default(cuid())\n  title     String\n  creator   String\n  ipfsHash  String    @unique\n  mediaType MediaType\n  mediaUrl  String\n  updatedAt DateTime  @updatedAt @db.Timestamptz\n  createdAt DateTime  @default(now()) @db.Timestamptz\n}\n",
+  "inlineSchemaHash": "f73293e73f0c6627df281d7a61fbf7e479675b7f6606709ebc7774e31314e1ff",
   "copyEngine": true
 }
 config.dirname = '/'
@@ -178,7 +178,7 @@ config.compilerWasm = undefined
 
 config.injectableEdgeEnv = () => ({
   parsed: {
-    LOCAL_DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['LOCAL_DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.LOCAL_DATABASE_URL || undefined
+    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
   }
 })
 
