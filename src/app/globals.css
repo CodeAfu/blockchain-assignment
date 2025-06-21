@@ -4,97 +4,99 @@
 
 @layer base {
   :root {
-    /* Warm off-white with subtle purple tint */
-    --background: 315 30% 98%;
-    --foreground: 224 71.4% 4.1%;
-    
-    /* Cards with subtle gradient feel */
-    --card: 320 40% 97%;
-    --card-foreground: 224 71.4% 4.1%;
-    
+    /* Light mode using your color palette */
+    /* Background: lightest thistle */
+    --background: 295 67% 98%;
+    --foreground: 240 65% 11%;
+
+    /* Cards: thistle 700 */
+    --card: 295 50% 95%;
+    --card-foreground: 240 65% 11%;
+
     /* Popovers */
-    --popover: 320 40% 97%;
-    --popover-foreground: 224 71.4% 4.1%;
-    
-    /* Enhanced primary with more vibrant purple-pink */
-    --primary: 280 90% 60%;
-    --primary-foreground: 210 20% 98%;
-    
-    /* Soft lavender secondary */
-    --secondary: 290 25% 92%;
-    --secondary-foreground: 280 30% 20%;
-    
-    /* Muted with warm undertones */
-    --muted: 300 20% 90%;
-    --muted-foreground: 280 15% 45%;
-    
-    /* Accent with energy */
-    --accent: 320 35% 88%;
-    --accent-foreground: 280 40% 15%;
-    
+    --popover: 295 50% 95%;
+    --popover-foreground: 240 65% 11%;
+
+    /* Primary: space cadet for strong contrast */
+    --primary: 240 30% 31%;
+    --primary-foreground: 295 50% 95%;
+
+    /* Secondary: puce lighter tones */
+    --secondary: 328 25% 85%;
+    --secondary-foreground: 328 45% 25%;
+
+    /* Muted: mountbatten pink light */
+    --muted: 345 20% 88%;
+    --muted-foreground: 345 25% 40%;
+
+    /* Accent: puce mid-tone */
+    --accent: 328 20% 80%;
+    --accent-foreground: 328 45% 25%;
+
     /* Keep destructive as is */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
-    
-    /* Softer borders */
-    --border: 310 20% 85%;
-    --input: 310 20% 88%;
-    
-    /* Enhanced ring color */
-    --ring: 280 90% 60%;
+
+    /* Borders: subtle puce */
+    --border: 328 15% 82%;
+    --input: 328 15% 85%;
+
+    /* Ring: space cadet to match primary */
+    --ring: 240 30% 31%;
     --radius: 0.75rem;
-    
-    /* Enhanced chart colors with more personality */
-    --chart-1: 340 75% 65%;  /* Vibrant pink */
-    --chart-2: 280 70% 60%;  /* Purple */
-    --chart-3: 200 80% 55%;  /* Cyan blue */
-    --chart-4: 45 90% 65%;   /* Golden yellow */
-    --chart-5: 120 60% 50%;  /* Fresh green */
+
+    /* Chart colors using your palette */
+    --chart-1: 295 45% 89%; /* thistle */
+    --chart-2: 328 30% 68%; /* puce */
+    --chart-3: 345 25% 65%; /* mountbatten pink */
+    --chart-4: 240 45% 35%; /* space cadet */
+    --chart-5: 250 65% 25%; /* russian violet */
   }
 
   .dark {
-    /* Rich dark purple instead of plain dark */
-    --background: 260 25% 8%;
-    --foreground: 315 20% 95%;
-    
-    /* Dark cards with purple undertones */
-    --card: 260 30% 10%;
-    --card-foreground: 315 20% 95%;
-    
-    --popover: 260 30% 10%;
-    --popover-foreground: 315 20% 95%;
-    
-    /* Brighter primary for dark mode */
-    --primary: 285 85% 65%;
-    --primary-foreground: 260 25% 8%;
-    
-    /* Dark secondary with purple hints */
-    --secondary: 260 20% 18%;
-    --secondary-foreground: 315 15% 85%;
-    
-    /* Muted with character */
-    --muted: 260 15% 16%;
-    --muted-foreground: 280 10% 60%;
-    
-    /* Dark accent */
-    --accent: 270 25% 20%;
-    --accent-foreground: 315 15% 85%;
-    
+    /* Dark mode using deeper tones from your palette */
+    /* Background: russian violet deep */
+    --background: 250 65% 8%;
+    --foreground: 295 40% 92%;
+
+    /* Cards: space cadet darker */
+    --card: 240 30% 12%;
+    --card-foreground: 295 40% 92%;
+
+    --popover: 240 30% 12%;
+    --popover-foreground: 295 40% 92%;
+
+    /* Primary: russian violet for deep, rich primary */
+    --primary: 250 65% 13%;
+    --primary-foreground: 295 50% 95%;
+
+    /* Secondary: space cadet mid-tone */
+    --secondary: 240 35% 20%;
+    --secondary-foreground: 295 30% 85%;
+
+    /* Muted: space cadet lighter */
+    --muted: 240 25% 18%;
+    --muted-foreground: 345 15% 65%;
+
+    /* Accent: mountbatten pink darker */
+    --accent: 345 20% 25%;
+    --accent-foreground: 295 30% 85%;
+
     --destructive: 0 75% 55%;
-    --destructive-foreground: 315 20% 95%;
-    
-    /* Purple-tinted borders */
-    --border: 260 20% 20%;
-    --input: 260 20% 18%;
-    
-    --ring: 285 85% 65%;
-    
-    /* Enhanced dark mode chart colors */
-    --chart-1: 350 80% 70%;
-    --chart-2: 290 75% 70%;
-    --chart-3: 200 85% 65%;
-    --chart-4: 50 95% 70%;
-    --chart-5: 130 65% 60%;
+    --destructive-foreground: 295 40% 92%;
+
+    /* Borders: space cadet */
+    --border: 240 25% 22%;
+    --input: 240 25% 20%;
+
+    --ring: 250 65% 13%;
+
+    /* Dark mode chart colors */
+    --chart-1: 295 55% 75%; /* bright thistle */
+    --chart-2: 328 40% 72%; /* bright puce */
+    --chart-3: 345 35% 70%; /* bright mountbatten pink */
+    --chart-4: 240 55% 65%; /* bright space cadet */
+    --chart-5: 250 75% 45%; /* bright russian violet */
   }
 }
 
@@ -102,28 +104,28 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     /* Add subtle texture */
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.05) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, hsl(var(--accent) / 0.05) 0%, transparent 50%);
   }
-  
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     @apply bg-muted;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     @apply bg-primary/30 rounded-full;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/50;
   }
@@ -134,11 +136,11 @@
   .glass-effect {
     @apply bg-white/70 dark:bg-black/30 backdrop-blur-md border border-white/20;
   }
-  
+
   .gradient-primary {
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
   }
-  
+
   .text-gradient {
     @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
