@@ -129,7 +129,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Classes\\APU\\Year 3\\Semester 1\\Blockchain Development\\Project\\blockchain-app\\blockchain-frontend\\generated\\prisma",
+      "value": "E:\\Projects\\blockchain-app\\blockchain-frontend\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -143,12 +143,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Classes\\APU\\Year 3\\Semester 1\\Blockchain Development\\Project\\blockchain-app\\blockchain-frontend\\prisma\\schema.prisma",
+    "sourceFilePath": "E:\\Projects\\blockchain-app\\blockchain-frontend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../prisma",
   "clientVersion": "6.3.1",
@@ -157,6 +156,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {

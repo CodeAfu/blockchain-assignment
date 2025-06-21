@@ -3,7 +3,7 @@ import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { mainnet, arbitrum, hardhat } from "@reown/appkit/networks";
 
 // Get projectId from https://cloud.reown.com
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+export const projectId = "6fbdc18482922de02ccbd35241f1c9c1";
 
 if (!projectId) {
   throw new Error("Project ID is not defined");

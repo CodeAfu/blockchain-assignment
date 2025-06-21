@@ -22,6 +22,10 @@ const navLinks = [
     label: "Test",
     href: "/test",
   },
+  {
+    label: "File Upload",
+    href: "/upload",
+  }
 ];
 
 export default function Header() {
