@@ -8,7 +8,7 @@ import {
 import { MEDIA_CONTRACT_ABI, MEDIA_CONTRACT_ADDRESS } from "@/lib/consts";
 import { Address, Hash, decodeEventLog } from "viem";
 import { useState, useCallback, useEffect } from "react";
-import { MediaAccessedEvent, MediaItem, MediaRegisteredEvent } from "@/lib/types";
+import { MediaAccessedEvent, MediaItem, MediaRegisteredEvent } from "@/types/media";
 
 export function useMediaContract() {
   const [lastTxHash, setLastTxHash] = useState<Hash>();

@@ -14,19 +14,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum MediaType {
-  audio
-  video
-  image
+model MediaNFT {
+  id                String   @id @default(cuid())
+  tokenId           Int      @unique @map("token_id")
+  creatorAddress    String   @map("creator_address") @db.VarChar(42)
+  ownerAddress      String   @map("owner_address") @db.VarChar(42)
+  title             String   @db.VarChar(255)
+  description       String?  @db.Text
+  ipfsHash          String   @map("ipfs_hash") @db.VarChar(100)
+  metadataIpfsHash  String   @map("metadata_ipfs_hash") @db.VarChar(100)
+  royaltyFee        BigInt   @map("royalty_fee")
+  category          String?  @db.VarChar(50)
+  tags              String[]
+  fileType          String?  @map("file_type") @db.VarChar(20)
+  fileSize          BigInt?  @map("file_size")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  accessLogs MediaAccessLog[]
+  transfers  MediaTransfer[]
+
+  @@index([creatorAddress])
+  @@index([ownerAddress])
+  @@map("media_nfts")
 }
 
-model Media {
-  id        String    @id @default(cuid())
-  title     String
-  creator   String
-  ipfsHash  String    @unique
-  mediaType MediaType
-  mediaUrl  String
-  updatedAt DateTime  @updatedAt @db.Timestamptz
-  createdAt DateTime  @default(now()) @db.Timestamptz
+model MediaAccessLog {
+  id              String   @id @default(cuid())
+  tokenId         Int      @map("token_id")
+  buyerAddress    String   @map("buyer_address") @db.VarChar(42)
+  amountPaid      BigInt   @map("amount_paid")
+  transactionHash String?  @map("transaction_hash") @db.VarChar(66)
+  accessedAt      DateTime @default(now()) @map("accessed_at")
+
+  mediaNFT MediaNFT @relation(fields: [tokenId], references: [tokenId])
+
+  @@index([tokenId])
+  @@map("media_access_logs")
+}
+
+model MediaTransfer {
+  id              String   @id @default(cuid())
+  tokenId         Int      @map("token_id")
+  fromAddress     String   @map("from_address") @db.VarChar(42)
+  toAddress       String   @map("to_address") @db.VarChar(42)
+  transactionHash String?  @map("transaction_hash") @db.VarChar(66)
+  transferredAt   DateTime @default(now()) @map("transferred_at")
+
+  mediaNFT MediaNFT @relation(fields: [tokenId], references: [tokenId])
+
+  @@index([tokenId])
+  @@map("media_transfers")
 }
