@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccount, useSignMessage } from "wagmi";
-import { uploadFileWithSignature } from "@/actions/pinata";
+import { uploadFileWithSignature } from "@/app/actions";
 
 export function useSignedUpload() {
   const { address, isConnected } = useAccount();
@@ -36,7 +36,6 @@ export function useSignedUpload() {
       return result;
     } catch (error) {
       console.error("Signed upload failed:", error);
-      throw error;
     }
   };
 

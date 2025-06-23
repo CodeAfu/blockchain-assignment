@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Container from "./container";
-import { getAccessLink, getFiles } from "@/actions/pinata";
+import { getAccessLinkByCid, getFiles } from "@/app/actions";
 import { getFileBaseName } from "@/lib/utils";
 import { SkeletonCard } from "./skeleton-card";
 
@@ -33,7 +33,7 @@ export default function MarketplacePreview() {
             return "image"; // fallback
           };
 
-          const accessLinkResult = await getAccessLink(file.cid);
+          const accessLinkResult = await getAccessLinkByCid(file.cid);
           const accessLink = accessLinkResult.data;
 
           const name = file.name ? getFileBaseName(file.name) : "Untitled Media";

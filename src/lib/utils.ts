@@ -37,6 +37,14 @@ export function getFileTypeCategory(type: string): "image" | "audio" | "video" |
   return null;
 }
 
+// Helper function to determine file type
+export function getFileType(mimeType: string): "IMAGE" | "VIDEO" | "AUDIO" | null {
+  if (mimeType.startsWith("image/")) return "IMAGE";
+  if (mimeType.startsWith("video/")) return "VIDEO";
+  if (mimeType.startsWith("audio/")) return "AUDIO";
+  return null;
+}
+
 export function getOptions<T = string>(
   methodType: MethodType,
   contentType: "multipart/form-data" | "application/json",

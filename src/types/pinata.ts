@@ -12,3 +12,11 @@ export interface UploadFileReturnType {
     is_duplicate: boolean;
   };
 }
+
+export interface KeyValues {
+  env: "dev" | "prod";
+  signature?: string;
+  signer?: string;
+  signedMessage?: string;
+  signedAt?: string;
+}

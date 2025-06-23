@@ -1,3 +1,4 @@
+import { FileType } from "@prisma/client";
 import { Address, Hash } from "viem";
 
 export const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/svg+xml"] as const;
@@ -30,6 +31,19 @@ export interface MediaAccessedEvent {
   amountPaid: bigint;
 }
 
+export interface NFTData {
+  tokenId: number;
+  creatorAddress: string;
+  ownerAddress: string;
+  title: string;
+  description?: string;
+  royaltyFee: bigint;
+  category?: string;
+  tags?: string[];
+  fileType?: FileType;
+  fileSize?: bigint;
+}
+
 export interface NFTMetadata {
   name: string;
   description: string;
@@ -38,7 +52,8 @@ export interface NFTMetadata {
     trait_type: string;
     value: string | number;
   }>;
-  properties: {
+  properties?: {
+    // Optional
     files: Array<{
       uri: string;
       type: string;

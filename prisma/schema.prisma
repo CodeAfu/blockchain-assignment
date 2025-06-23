@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -21,20 +20,22 @@ enum FileType {
 }
 
 model MediaNFT {
-  id             String   @id @default(cuid())
-  tokenId        Int      @unique
-  creatorAddress String   @db.VarChar(42)
-  ownerAddress   String   @db.VarChar(42)
-  title          String   @db.VarChar(255)
-  description    String?  @db.Text
-  cid            String   @db.VarChar(100)
+  id             String    @id @default(cuid())
+  tokenId        Int       @unique
+  creatorAddress String    @db.VarChar(42)
+  ownerAddress   String    @db.VarChar(42)
+  title          String    @db.VarChar(255)
+  description    String?   @db.Text
+  cid            String    @db.VarChar(100)
+  metadataCid    String    @db.VarChar(100)
   royaltyFee     BigInt
-  category       String?  @db.VarChar(50)
+  category       String?   @db.VarChar(50)
   tags           String[]
   fileType       FileType?
   fileSize       BigInt?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  domain         String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   accessLogs MediaAccessLog[]
   transfers  MediaTransfer[]

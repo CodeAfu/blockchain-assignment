@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 import type { MediaAccessData, MediaTransferData } from "../types/media";
-import { MediaAccessLog, MediaNFT, MediaTransfer } from "../../generated/prisma";
+import { FileType, MediaAccessLog, MediaNFT, MediaTransfer } from "@prisma/client";
 
 export class DatabaseService {
   // Create a new media NFT record
@@ -11,12 +11,13 @@ export class DatabaseService {
     title: string;
     description?: string;
     cid: string;
-    metadataIpfsHash: string;
+    metadataCid: string;
     royaltyFee: bigint;
     category?: string;
     tags?: string[];
-    fileType?: string;
+    fileType?: FileType;
     fileSize?: bigint;
+    domain?: string;
   }): Promise<MediaNFT> {
     try {
       return await prisma.mediaNFT.create({
@@ -27,17 +28,18 @@ export class DatabaseService {
           title: data.title,
           description: data.description,
           cid: data.cid,
-          metadataIpfsHash: data.metadataIpfsHash,
+          metadataCid: data.metadataCid,
           royaltyFee: data.royaltyFee,
           category: data.category,
           tags: data.tags || [],
           fileType: data.fileType,
           fileSize: data.fileSize,
+          domain: data.domain,
         },
       });
     } catch (error) {
       console.error("Error creating media NFT:", error);
-      throw new Error("Failed to create media NFT");
+      throw new Error("Failed to add media NFT to database");
     }
   }
 
