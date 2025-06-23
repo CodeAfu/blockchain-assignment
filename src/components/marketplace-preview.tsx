@@ -38,6 +38,7 @@ const sampleNFTs: NFT[] = [
 
 export default function MarketplacePreview() {
   const [nfts, setNfts] = useState<NFT[]>([]);
+  // const [imageFile, setImageFile] = useState<File | undefined>();
 
   useEffect(() => {
     // Replace with actual fetch from your contract or DB

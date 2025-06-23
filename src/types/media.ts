@@ -1,5 +1,13 @@
 import { Address, Hash } from "viem";
 
+export const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/svg+xml"] as const;
+export const audioTypes = ["audio/mpeg", "audio/ogg"] as const;
+export const videoTypes = ["video/mp4"] as const;
+
+export const allowedContentTypes = [...imageTypes, ...audioTypes, ...videoTypes] as const;
+
+export type MediaContentType = (typeof allowedContentTypes)[number];
+
 export interface MediaItem {
   title: string;
   owner: Address;

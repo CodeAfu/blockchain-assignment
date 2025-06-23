@@ -1,6 +1,6 @@
-import { prisma } from './prisma';
-import type { MediaNFT, MediaAccessLog, MediaTransfer } from '@prisma/client';
-import type { MediaNFTInput MediaAccessData, MediaTransferData } from '../types/media';
+import { prisma } from "./prisma";
+import type { MediaAccessData, MediaTransferData } from "../types/media";
+import { MediaAccessLog, MediaNFT, MediaTransfer } from "../../generated/prisma";
 
 export class DatabaseService {
   // Create a new media NFT record
@@ -10,7 +10,7 @@ export class DatabaseService {
     ownerAddress: string;
     title: string;
     description?: string;
-    ipfsHash: string;
+    cid: string;
     metadataIpfsHash: string;
     royaltyFee: bigint;
     category?: string;
@@ -26,7 +26,7 @@ export class DatabaseService {
           ownerAddress: data.ownerAddress,
           title: data.title,
           description: data.description,
-          ipfsHash: data.ipfsHash,
+          cid: data.cid,
           metadataIpfsHash: data.metadataIpfsHash,
           royaltyFee: data.royaltyFee,
           category: data.category,
@@ -36,8 +36,8 @@ export class DatabaseService {
         },
       });
     } catch (error) {
-      console.error('Error creating media NFT:', error);
-      throw new Error('Failed to create media NFT');
+      console.error("Error creating media NFT:", error);
+      throw new Error("Failed to create media NFT");
     }
   }
 
@@ -48,45 +48,45 @@ export class DatabaseService {
         where: { tokenId },
         include: {
           accessLogs: {
-            orderBy: { accessedAt: 'desc' },
-            take: 10
+            orderBy: { accessedAt: "desc" },
+            take: 10,
           },
           transfers: {
-            orderBy: { transferredAt: 'desc' },
-            take: 10
-          }
-        }
+            orderBy: { transferredAt: "desc" },
+            take: 10,
+          },
+        },
       });
     } catch (error) {
-      console.error('Error fetching media NFT:', error);
-      throw new Error('Failed to fetch media NFT');
+      console.error("Error fetching media NFT:", error);
+      throw new Error("Failed to fetch media NFT");
     }
   }
 
   // Get all media NFTs with pagination
   async getAllMediaNFTs(
-    limit: number = 50, 
+    limit: number = 50,
     offset: number = 0,
     category?: string
   ): Promise<MediaNFT[]> {
     try {
       return await prisma.mediaNFT.findMany({
         where: category ? { category } : undefined,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: limit,
         skip: offset,
         include: {
           _count: {
             select: {
               accessLogs: true,
-              transfers: true
-            }
-          }
-        }
+              transfers: true,
+            },
+          },
+        },
       });
     } catch (error) {
-      console.error('Error fetching media NFTs:', error);
-      throw new Error('Failed to fetch media NFTs');
+      console.error("Error fetching media NFTs:", error);
+      throw new Error("Failed to fetch media NFTs");
     }
   }
 
@@ -95,19 +95,19 @@ export class DatabaseService {
     try {
       return await prisma.mediaNFT.findMany({
         where: { creatorAddress },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         include: {
           _count: {
             select: {
               accessLogs: true,
-              transfers: true
-            }
-          }
-        }
+              transfers: true,
+            },
+          },
+        },
       });
     } catch (error) {
-      console.error('Error fetching creator NFTs:', error);
-      throw new Error('Failed to fetch creator NFTs');
+      console.error("Error fetching creator NFTs:", error);
+      throw new Error("Failed to fetch creator NFTs");
     }
   }
 
@@ -116,19 +116,19 @@ export class DatabaseService {
     try {
       return await prisma.mediaNFT.findMany({
         where: { ownerAddress },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         include: {
           _count: {
             select: {
               accessLogs: true,
-              transfers: true
-            }
-          }
-        }
+              transfers: true,
+            },
+          },
+        },
       });
     } catch (error) {
-      console.error('Error fetching owner NFTs:', error);
-      throw new Error('Failed to fetch owner NFTs');
+      console.error("Error fetching owner NFTs:", error);
+      throw new Error("Failed to fetch owner NFTs");
     }
   }
 
@@ -137,14 +137,14 @@ export class DatabaseService {
     try {
       return await prisma.mediaNFT.update({
         where: { tokenId },
-        data: { 
+        data: {
           ownerAddress: newOwnerAddress,
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       });
     } catch (error) {
-      console.error('Error updating NFT owner:', error);
-      throw new Error('Failed to update NFT owner');
+      console.error("Error updating NFT owner:", error);
+      throw new Error("Failed to update NFT owner");
     }
   }
 
@@ -157,11 +157,11 @@ export class DatabaseService {
           buyerAddress: data.buyerAddress,
           amountPaid: data.amountPaid,
           transactionHash: data.transactionHash,
-        }
+        },
       });
     } catch (error) {
-      console.error('Error logging media access:', error);
-      throw new Error('Failed to log media access');
+      console.error("Error logging media access:", error);
+      throw new Error("Failed to log media access");
     }
   }
 
@@ -174,11 +174,11 @@ export class DatabaseService {
           fromAddress: data.fromAddress,
           toAddress: data.toAddress,
           transactionHash: data.transactionHash,
-        }
+        },
       });
     } catch (error) {
-      console.error('Error logging media transfer:', error);
-      throw new Error('Failed to log media transfer');
+      console.error("Error logging media transfer:", error);
+      throw new Error("Failed to log media transfer");
     }
   }
 
@@ -187,11 +187,11 @@ export class DatabaseService {
     try {
       return await prisma.mediaAccessLog.findMany({
         where: { tokenId },
-        orderBy: { accessedAt: 'desc' }
+        orderBy: { accessedAt: "desc" },
       });
     } catch (error) {
-      console.error('Error fetching access logs:', error);
-      throw new Error('Failed to fetch access logs');
+      console.error("Error fetching access logs:", error);
+      throw new Error("Failed to fetch access logs");
     }
   }
 
@@ -200,11 +200,11 @@ export class DatabaseService {
     try {
       return await prisma.mediaTransfer.findMany({
         where: { tokenId },
-        orderBy: { transferredAt: 'desc' }
+        orderBy: { transferredAt: "desc" },
       });
     } catch (error) {
-      console.error('Error fetching transfer logs:', error);
-      throw new Error('Failed to fetch transfer logs');
+      console.error("Error fetching transfer logs:", error);
+      throw new Error("Failed to fetch transfer logs");
     }
   }
 
@@ -217,28 +217,28 @@ export class DatabaseService {
             {
               title: {
                 contains: query,
-                mode: 'insensitive'
-              }
+                mode: "insensitive",
+              },
             },
             {
               description: {
                 contains: query,
-                mode: 'insensitive'
-              }
+                mode: "insensitive",
+              },
             },
             {
               category: {
                 contains: query,
-                mode: 'insensitive'
-              }
-            }
-          ]
+                mode: "insensitive",
+              },
+            },
+          ],
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: "desc" },
       });
     } catch (error) {
-      console.error('Error searching media NFTs:', error);
-      throw new Error('Failed to search media NFTs');
+      console.error("Error searching media NFTs:", error);
+      throw new Error("Failed to search media NFTs");
     }
   }
 }
