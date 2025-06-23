@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   images: {
-    domains: ["ipfs.io"],
+    domains: ["tan-imperial-gecko-849.mypinata.cloud"],
   },
 };
 

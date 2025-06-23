@@ -51,3 +51,14 @@ export function getOptions<T = string>(
     body: body,
   };
 }
+
+export function devLog(...args: unknown[]) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(...args);
+  }
+}
+
+export function getFileBaseName(filename: string): string {
+  const lastDotIndex = filename.lastIndexOf(".");
+  return lastDotIndex !== -1 ? filename.slice(0, lastDotIndex) : filename;
+}

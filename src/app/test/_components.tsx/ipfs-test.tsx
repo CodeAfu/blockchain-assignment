@@ -14,13 +14,18 @@ export default function IPFSTest() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsLoading(true);
-    const file = e.target.files?.[0];
-    if (file) {
-      uploadWithSignature(file).then(result => {
-        console.log(result);
-        setIsLoading(false);
-      });
+    try {
+      setIsLoading(true);
+      const file = e.target.files?.[0];
+      if (file) {
+        uploadWithSignature(file).then(result => {
+          console.log(result);
+          setIsLoading(false);
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
     }
   };
 

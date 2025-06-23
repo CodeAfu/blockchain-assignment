@@ -15,9 +15,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Tasks
 
-- Create page to upload media files
-- Create React component that tracks wallet information
-- Mint NFT with uploaded media files
+- Create page to upload media files (audio, video, & image files) - Rion 🔨
+- Create React component that tracks wallet information (MetaMask) - Jaedon ✅
+- Mint NFT with uploaded media files - Hou Jin 🔨
+- Do research and adjust smart contract implementation to work as NFT (mint, ownership, etc) - Jaedon 🔨
+- Create page to browse user media - 
 
 ## Git Workflow
 
@@ -56,23 +58,34 @@ git pull origin main
 ## Useful Terminal Commands
 
 ```bash
-# Create postgres docker container
+# Create postgres docker container (not required)
 docker run --name local-mediavault-db -e POSTGRES_USER=localuser -e POSTGRES_PASSWORD=localpass -e POSTGRES_DB=localdb -p 5432:5432 -d postgres
 
-# Generate prisma schema
+# Generate prisma schema (Get rid of typescript errors)
 npx prisma generate
 
-# Prisma migrate
-npx prisma migrate dev --name init
+## Database schema modelling
+# Use to push new changes early in development
+npx prisma db push
+# OR
+# Prisma migrate once db is defined properly
+npx prisma migrate dev --name <name-of-migration>
 
 # View database via prisma UI
 npx prisma studio
+
 ```
 
-## Helpers (Pls use)
+## Helpers
 
-- `useWallet()`: **Wallet Context Provider** with hopefully all the tools you need to control the wallet 🔨
-- `useMediaContract()`: **Media Contract Context Provider** - connect smart contract to the frontend and provides the `provider`, `signer`, and `contract` variables
+- `useAppKitContext()`: **Wallet Context Provider** - Provides control over the wallet
+- `useMediaContract()`: **Media Contract Context Provider** - Provides access to smart contract functions (WIP)
+
+## IPFS
+
+You may interact with the IPFS server using next.js server actions located here in this project: [./src/actions/pinata.ts](./src/actions/pinata.ts).  Use the SDK to build your own functions if necessary
+
+Materials: [Docs](https://docs.pinata.cloud/quickstart), [SDK Guideline](https://docs.pinata.cloud/sdk/getting-started)
 
 ## Run with Smart Contract
 
@@ -89,51 +102,34 @@ npm run node
 npm run deploy
 ```
 
-3. Use ethers library in the frontend project to initialize these variables:
+3. Use **Reown AppKit** [hooks](https://docs.reown.com/appkit/next/core/hooks#hooks)/[components](https://docs.reown.com/appkit/next/core/components) to build components that interact with wallet ✅
 
-```tsx
-import { MEDIA_CONTRACT_ABI, MEDIA_CONTRACT_ADDRESS } from "@/lib/consts";
-
-// provider: idk 💀
-// signer: idk 💀
-// contract: Access methods defined in smart contract
-const provider = new ethers.BrowserProvider(window.ethereum);
-const signer = await provider.getSigner();
-const contract = new ethers.Contract(MEDIA_CONTRACT_ADDRESS, MEDIA_CONTRACT_ABI, signer);
-```
-
-4. Optionally, use the predefined `useMediaContract()` context for easier access (react context hook)
-
-[View Sample Contract Usage](./src/app/sample/_components/sample-component.tsx)
-
-## Update Smart Contract:
-
-Tired rn
+4. Use **Wagmi** [actions](https://wagmi.sh/core/api/actions) to build components that interact with smart contract
 
 ## Features
 
-- Mint NFT for Media Uploaded [❌]
-- Display Wallet Info [🔨]
-- Register Media [❌]
-- View Media Details [❌]
-- View Media Upload History [❌]
-- Automatic Royalty Enrollment [❌]
-- Prove Ownership [❓]
-- Transfer Ownership [❓]
+- Upload to IPFS via Pinata 🔨
+- Mint NFT for Uploaded Media 🔨
+- Display Wallet Info ✅
+- Register Media ❌
+- View Media Details ❌
+- View Media Upload History ❌
+- Automatic Royalty Enrollment ❌
+- Prove Ownership ❓
+- Transfer Ownership ❓
 
 ## Libraries Used
 
 - shadcn (Use --legacy-peer-deps for installing shadcn components)
 - zod
 - zustand (avoid redux pls)
-- prisma(?)
-- tanstack react query (?)
+- prisma
+- @tanstack/react-query
 
 ## Tech Stack
 
 - Backend: Next.js Server Actions(?)
 - Database: Postgres (Neon)
-- Blockchain: idk
 
 ## Prettier Guide
 
