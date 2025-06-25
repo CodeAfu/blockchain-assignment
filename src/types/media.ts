@@ -26,9 +26,16 @@ export interface MediaRegisteredEvent {
 }
 
 export interface MediaAccessedEvent {
-  mediaId: Hash;
-  user: Address;
+  tokenId: bigint;
+  buyer: Address;
   amountPaid: bigint;
+}
+
+export interface MediaMintedEvent {
+  tokenId: bigint;
+  creator: Address;
+  metadataURI: string;
+  royaltyFee: bigint;
 }
 
 export interface NFTData {
@@ -60,6 +67,19 @@ export interface NFTMetadata {
     }>;
     category: string;
   };
+}
+
+export interface MediaDetails {
+  royaltyFee: bigint;
+  creator: Address;
+}
+
+export interface NFTMediaItem {
+  tokenId: bigint;
+  tokenURI: string;
+  owner: Address;
+  creator: Address;
+  royaltyFee: bigint;
 }
 
 export interface MediaNFTInput {

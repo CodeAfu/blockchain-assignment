@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   images: {
+    // https://nextjs.org/docs/app/api-reference/components/image#remotepatterns
     domains: ["tan-imperial-gecko-849.mypinata.cloud"],
   },
 };

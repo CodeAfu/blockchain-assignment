@@ -38,11 +38,11 @@ export function getFileTypeCategory(type: string): "image" | "audio" | "video" |
 }
 
 // Helper function to determine file type
-export function getFileType(mimeType: string): "IMAGE" | "VIDEO" | "AUDIO" | null {
+export function getFileType(mimeType: string): "IMAGE" | "VIDEO" | "AUDIO" | undefined {
   if (mimeType.startsWith("image/")) return "IMAGE";
   if (mimeType.startsWith("video/")) return "VIDEO";
   if (mimeType.startsWith("audio/")) return "AUDIO";
-  return null;
+  return;
 }
 
 export function getOptions<T = string>(
