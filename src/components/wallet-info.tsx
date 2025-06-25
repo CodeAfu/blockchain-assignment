@@ -9,7 +9,7 @@ const WalletInfo = ({ className, ...props }: React.ComponentProps<"div">) => {
 
   return (
     <div
-      className={cn("max-w-xl", className)}
+      className={cn("max-w-xl h-fit", className)}
       style={{ padding: "1rem", border: "1px solid #ccc", borderRadius: "8px" }}
       {...props}
     >

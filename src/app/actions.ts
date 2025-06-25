@@ -37,10 +37,14 @@ interface GetFilesOptions {
   pageToken?: string;
 }
 
+// interface UploadResult {
+//   fileCid: string;
+//   tokenUriCid: string;
+// }
+
 export async function uploadFileWithSignature(
   formData: FormData,
-  signatureData: SignatureData,
-  nftData?: NFTData
+  signatureData: SignatureData
 ): Promise<Result<UploadResponse>> {
   const file = formData.get("file") as File;
 
@@ -72,6 +76,7 @@ export async function uploadFileWithSignature(
         signedMessage: signatureData.message,
         signedAt: signatureData.timestamp.toString(),
       })
+      .group(groupId)
       .then(result => result)
   );
 
@@ -83,56 +88,31 @@ export async function uploadFileWithSignature(
   }
 
   devLog("File Uploaded to IPFS with signature");
+  return fileResult;
+}
 
-  // Add file to group
-  await pinata.groups.private.addFiles({
-    groupId: groupId,
-    files: [fileResult.data.id],
-  });
+export async function getMetadata(cid: string) {
+  const result = await tryCatch(pinata.gateways.public.get(cid).then(res => res));
+  return result;
+}
 
-  devLog("File added to group");
+export async function saveToDatabase(nftData: NFTData & { cid: string; metadataCid: string }) {
+  const dbResult = await tryCatch(
+    db.createMediaNFT({
+      ...nftData,
+      cid: nftData.cid,
+      metadataCid: nftData.metadataCid,
+      domain: process.env.NEXT_PUBLIC_GATEWAY_URL,
+    })
+  );
 
-  // If NFT data is provided, create the database record
-  if (nftData && fileResult.data.cid) {
-    const fileData = fileResult.data; // Returns UploadResponse
-
-    const metadata: NFTMetadata = {
-      name: nftData.title,
-      description: nftData.description ?? "",
-      image: `ipfs://${fileData.cid}`,
-      attributes: [
-        { trait_type: "Category", value: nftData.category || "Uncategorized" },
-        { trait_type: "File Type", value: nftData.fileType || "Unknown" },
-        { trait_type: "Royalty Fee", value: `${nftData.royaltyFee}%` },
-      ],
-    };
-
-    const metadataResult = await storeMetadata(metadata);
-
-    if (!metadataResult.data) {
-      return {
-        data: null,
-        error: new Error("Failed to retrieve media metadata"),
-      };
-    }
-
-    const tokenUriCid = metadataResult.data.cid;
-
-    const mediaNFT = await tryCatch(
-      db.createMediaNFT({
-        ...nftData,
-        cid: fileData.cid,
-        metadataCid: tokenUriCid,
-        domain: process.env.NEXT_PUBLIC_GATEWAY_URL,
-      })
-    );
-
-    if (mediaNFT.error) {
-      console.error("Error during Media NFT Creation: ", mediaNFT.error);
-    }
+  if (dbResult.error) {
+    console.error("Error during Media NFT Creation: ", dbResult.error);
   }
 
-  return fileResult;
+  devLog("DB Record created: ", dbResult.data);
+
+  return dbResult;
 }
 
 export async function getFiles(options: GetFilesOptions = {}): Promise<Result<FileListResponse>> {
@@ -213,20 +193,48 @@ export async function getGroup(): Promise<Result<GroupResponseItem>> {
   return result;
 }
 
-async function storeMetadata(metadata: NFTMetadata) {
-  const metadataBlob = new Blob([JSON.stringify(metadata)], {
-    type: "application/json",
-  });
-
-  const metadataFile = new File([metadataBlob], "metadata.json", {
-    type: "application/json",
-  });
-
-  const metadataResult = await tryCatch(pinata.upload.public.file(metadataFile).then(res => res));
-
-  if (metadataResult.error) {
-    console.error("Error uploading metadata: ", metadataResult.error);
+export async function storeMetadata(file: File, filename: string): Promise<Result<UploadResponse>> {
+  if (!file) {
+    return {
+      data: null,
+      error: new Error("File not provided"),
+    };
   }
 
-  return metadataResult;
+  const groupId = process.env.PINATA_GROUP_ID;
+
+  if (!groupId) {
+    return {
+      data: null,
+      error: new Error("Missing Pinata Group ID."),
+    };
+  }
+
+  const uploadResult = await tryCatch(
+    pinata.upload.public
+      .file(file)
+      .name(`${groupId}-${filename}`)
+      .keyvalues({
+        env: process.env.NODE_ENV === "development" ? "dev" : "prod",
+      })
+      .then(res => res)
+  );
+
+  return uploadResult;
+}
+
+export async function createMetadata(
+  fileData: UploadResponse,
+  nftData: Omit<NFTData, "tokenId">
+): Promise<NFTMetadata> {
+  return {
+    name: nftData.title,
+    description: nftData.description ?? "",
+    image: `ipfs://${fileData.cid}`,
+    attributes: [
+      { trait_type: "Category", value: nftData.category || "Uncategorized" },
+      { trait_type: "File Type", value: nftData.fileType || "Unknown" },
+      { trait_type: "Royalty Fee", value: `${nftData.royaltyFee}%` },
+    ],
+  };
 }
