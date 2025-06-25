@@ -75,7 +75,6 @@ export default function IPFSTest() {
     } catch (err) {
       console.error(err);
       setIsLoading(false);
-    } finally {
     }
   };
 
