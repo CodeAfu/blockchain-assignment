@@ -39,11 +39,11 @@ export default function Header() {
               {/* <Cuboid className="h-12 w-12" /> */}
               <h1 className="text-2xl font-semibold tracking-wider">
                 <span className="relative">
-                  <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary to-purple-950">
+                  <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary to-blue-950">
                     Media
                   </span>
                   <span>Vault</span>
-                  <div className="absolute -bottom-0.5 left-0 w-20 h-0.5 bg-gradient-to-r from-primary to-purple-600 rounded-full"></div>
+                  <div className="absolute -bottom-0.5 left-0 w-20 h-0.5 bg-gradient-to-r from-primary to-blue-950 rounded-full"></div>
                 </span>
               </h1>
             </div>

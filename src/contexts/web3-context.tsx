@@ -3,9 +3,9 @@
 import { wagmiAdapter, projectId } from "@/lib/web3-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createAppKit } from "@reown/appkit/react";
-import { mainnet, arbitrum, hardhat } from "@reown/appkit/networks";
 import React, { type ReactNode } from "react";
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
+import { networks } from "@/lib/web3-config";
 
 // Set up queryClient
 const queryClient = new QueryClient();
@@ -26,15 +26,21 @@ const metadata = {
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [mainnet, arbitrum, hardhat],
-  defaultNetwork: hardhat,
+  networks: networks,
+  defaultNetwork: networks[0],
   metadata: metadata,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration
   },
 });
 
-export function WagmiContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
+export function WagmiContextProvider({
+  children,
+  cookies,
+}: {
+  children: ReactNode;
+  cookies: string | null;
+}) {
   const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies);
 
   return (

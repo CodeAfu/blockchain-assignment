@@ -12,7 +12,7 @@ export default function HeroSection() {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
           Own Your
           <br />
           <span className="text-primary">Digital Legacy</span>
