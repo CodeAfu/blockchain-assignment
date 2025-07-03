@@ -11,28 +11,28 @@ import { NFTData } from "@/types/media";
 import { devLog, getFileType } from "@/lib/utils";
 import { useMediaContract } from "./use-media-contract";
 import { useState } from "react";
+import { Address } from "viem";
+import { Result } from "@/types/result";
+import { UploadResponse } from "pinata";
 
-type SignedUploadError =
-  | "unknown"
-  | "rejected"
-  | "upload-failed"
-  | "create-metadata-failed"
-  | "store-metadata-failed"
-  | "mint-failed"
-  | null;
+type UploadStatus = "unknown" | "rejected" | "failed" | "no-wallet" | null;
 
 export function useSignedUpload() {
   const { address, isConnected } = useAccount();
   const { signMessageAsync, isPending } = useSignMessage();
   const { mintNFT, mintedTokenId } = useMediaContract();
-  const [errorType] = useState<SignedUploadError>(null);
+  const [status, setStatus] = useState<UploadStatus>(null);
 
   const uploadWithSignature = async (
     file: File,
     nftData: Omit<NFTData, "creatorAddress" | "ownerAddress" | "tokenId">
   ) => {
     if (!isConnected || !address) {
-      throw new Error("Wallet not connected");
+      setStatus("no-wallet");
+      return {
+        data: null,
+        error: new Error("No wallet detected."),
+      };
     }
 
     try {
@@ -48,15 +48,11 @@ export function useSignedUpload() {
       const formData = new FormData();
       formData.append("file", file);
 
-      // Upload with signature
-      const fileUploadResult = await uploadFileWithSignature(formData, {
-        signature,
-        signer: address,
-        message,
-        timestamp: Date.now(),
-      });
+      // Upload to Pinata IPFS
+      const fileUploadResult = await uploadFile(formData, signature, address, message);
 
       if (fileUploadResult.error) {
+        setStatus("failed");
         return fileUploadResult;
       }
 
@@ -124,7 +120,23 @@ export function useSignedUpload() {
   return {
     uploadWithSignature,
     isPending,
-    errorType,
+    errorType: status,
     isConnected,
   };
+}
+
+async function uploadFile(
+  formData: FormData,
+  signature: string,
+  address: Address,
+  message: string
+): Promise<Result<UploadResponse>> {
+  const fileUploadResult = uploadFileWithSignature(formData, {
+    signature,
+    signer: address,
+    message,
+    timestamp: Date.now(),
+  });
+
+  return fileUploadResult;
 }
