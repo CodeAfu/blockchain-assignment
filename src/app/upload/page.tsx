@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Footer from "@/components/footer";
 import { Button } from "@/components/shadcn-ui/button";
 import { Card, CardContent } from "@/components/shadcn-ui/card";
 import { Input } from "@/components/shadcn-ui/input";
 import { Textarea } from "@/components/shadcn-ui/textarea";
 import { Label } from "@/components/shadcn-ui/label";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function Upload() {
+  const { isConnected } = useAppKitAccount();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,9 +28,7 @@ export default function Upload() {
 
     if (file) {
       const supportedTypes = ["image/", "video/", "audio/"];
-      const isSupported = supportedTypes.some((type) =>
-        file.type.startsWith(type)
-      );
+      const isSupported = supportedTypes.some(type => file.type.startsWith(type));
 
       if (!isSupported) {
         setError("Unsupported file type. Please select an image, video, or audio file.");
@@ -49,11 +50,9 @@ export default function Upload() {
     const numericValue = parseFloat(value);
     if (numericValue > 10) {
       setRoyaltyError("Royalty fee cannot exceed 10%.");
-    }
-    else if (numericValue < 0) {
+    } else if (numericValue < 0) {
       setRoyaltyError("Royalty fee cannot be less than 0%.");
-    } 
-    else {
+    } else {
       setRoyaltyError(null);
     }
   };
@@ -65,13 +64,18 @@ export default function Upload() {
     }
 
     if (!title || !description || !royaltyFee || !price) {
-      alert("Please fill in all fields before uploading.");
+      setError("Please fill in all fields before uploading.");
       return;
     }
 
     const numericRoyalty = parseFloat(royaltyFee);
     if (numericRoyalty > 10) {
-      alert("Royalty fee cannot exceed 10%.");
+      setError("Royalty fee cannot exceed 10%.");
+      return;
+    }
+
+    if (!isConnected) {
+      setError("Please Connect to your wallet.");
       return;
     }
 
@@ -82,7 +86,10 @@ export default function Upload() {
       description,
       royaltyFee: numericRoyalty,
       price,
-      tags: tags.split(",").map(tag => tag.trim()).filter(tag => tag !== ""),
+      tags: tags
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(tag => tag !== ""),
     });
 
     // Example: reset after upload
@@ -99,49 +106,51 @@ export default function Upload() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <main className="flex flex-1 items-center justify-center p-4">
-        <Card className="w-full max-w-lg shadow-lg">
+    <div className="flex flex-col bg-gray-50">
+      <main className="flex flex-1 justify-center min-h-[85vh] p-4">
+        <Card className="w-full max-w-2xl shadow-lg h-fit sm:my-8 my-0">
           <CardContent className="flex flex-col gap-4 p-6">
             <h2 className="text-2xl font-bold text-center">Upload NFT</h2>
 
-            <input
-              type="file"
-              accept="image/*,video/*,audio/*"
-              onChange={handleFileChange}
-              className="w-full file:mr-4 file:py-2 file:px-4
-                         file:rounded file:border-0
-                         file:text-sm file:font-semibold
-                         file:bg-blue-50 file:text-blue-700
-                         hover:file:bg-blue-100"
-            />
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex items-center gap-4">
+                <Button asChild>
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    Choose File
+                  </label>
+                </Button>
 
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
+                {selectedFile && (
+                  <span className="text-sm text-gray-700 truncate max-w-[200px]">
+                    {selectedFile.name}
+                  </span>
+                )}
+              </div>
+
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*,video/*,audio/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
 
             {previewUrl && (
-              <>
+              <div className="shadow relative aspect-video rounded-lg p-4">
                 {selectedFile?.type.startsWith("image/") ? (
-                  <img
+                  <Image
                     src={previewUrl}
                     alt="Preview"
-                    className="w-full rounded-lg shadow"
+                    fill
+                    className="object-contain rounded-lg"
                   />
                 ) : selectedFile?.type.startsWith("video/") ? (
-                  <video
-                    src={previewUrl}
-                    controls
-                    className="w-full rounded-lg shadow"
-                  />
+                  <video src={previewUrl} controls className="w-full rounded-lg shadow" />
                 ) : selectedFile?.type.startsWith("audio/") ? (
-                  <audio
-                    src={previewUrl}
-                    controls
-                    className="w-full"
-                  />
+                  <audio src={previewUrl} controls className="w-full" />
                 ) : null}
-              </>
+              </div>
             )}
 
             {/* Title */}
@@ -151,7 +160,7 @@ export default function Upload() {
                 id="title"
                 placeholder="Enter NFT title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={e => setTitle(e.target.value)}
               />
             </div>
 
@@ -162,7 +171,7 @@ export default function Upload() {
                 id="description"
                 placeholder="Describe your NFT"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={e => setDescription(e.target.value)}
               />
             </div>
 
@@ -172,13 +181,11 @@ export default function Upload() {
               <Input
                 id="royalty"
                 type="number"
-                placeholder="e.g., 5"
+                placeholder="5"
                 value={royaltyFee}
                 onChange={handleRoyaltyChange}
               />
-              {royaltyError && (
-                <p className="text-red-500 text-sm mt-1">{royaltyError}</p>
-              )}
+              {royaltyError && <p className="text-red-500 text-sm mt-1">{royaltyError}</p>}
             </div>
 
             {/* Price */}
@@ -187,9 +194,10 @@ export default function Upload() {
               <Input
                 id="price"
                 type="number"
-                placeholder="e.g., 0.05"
+                step="0.05"
+                placeholder="0.05"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={e => setPrice(e.target.value)}
               />
             </div>
 
@@ -198,11 +206,18 @@ export default function Upload() {
               <Label htmlFor="tags">Tags (comma separated)</Label>
               <Input
                 id="tags"
-                placeholder="e.g., art, music, 3D"
+                placeholder="art, music, 3D"
                 value={tags}
-                onChange={(e) => setTags(e.target.value)}
+                onChange={e => setTags(e.target.value)}
               />
             </div>
+
+            {error && (
+              <div className="text-red-500 w-fit self-center border border-red-500 bg-red-50 p-2 rounded-lg text-sm">
+                <p className="text-center font-bold">Error</p>
+                <p className="text-center">{error}</p>
+              </div>
+            )}
 
             <Button onClick={handleUpload} className="w-full mt-2">
               Upload NFT
