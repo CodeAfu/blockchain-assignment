@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import Image from "next/image";
 import Footer from "@/components/footer";
 import { Button } from "@/components/shadcn-ui/button";
@@ -9,18 +9,18 @@ import { Input } from "@/components/shadcn-ui/input";
 import { Textarea } from "@/components/shadcn-ui/textarea";
 import { Label } from "@/components/shadcn-ui/label";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { uploadFormReducer, initialUploadFormState } from "@/lib/reducers/upload-form-reducer";
 
 export default function Upload() {
+  const [{ title, description, royaltyFee, price, tags }, dispatch] = useReducer(
+    uploadFormReducer,
+    initialUploadFormState
+  );
   const { isConnected } = useAppKitAccount();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
   const [error, setError] = useState<string | null>(null);
-
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [royaltyFee, setRoyaltyFee] = useState("");
-  const [price, setPrice] = useState("");
-  const [tags, setTags] = useState("");
   const [royaltyError, setRoyaltyError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +45,7 @@ export default function Upload() {
 
   const handleRoyaltyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setRoyaltyFee(value);
+    dispatch({ type: "SET_FIELD", field: "royaltyFee", value: e.target.value });
 
     const numericValue = parseFloat(value);
     if (numericValue > 10) {
@@ -92,14 +92,10 @@ export default function Upload() {
         .filter(tag => tag !== ""),
     });
 
-    // Example: reset after upload
     setSelectedFile(null);
     setPreviewUrl(null);
-    setTitle("");
-    setDescription("");
-    setRoyaltyFee("");
-    setPrice("");
-    setTags("");
+
+    dispatch({ type: "RESET" });
     setError(null);
     setRoyaltyError(null);
     alert("NFT uploaded (simulated)!");
@@ -160,7 +156,9 @@ export default function Upload() {
                 id="title"
                 placeholder="Enter NFT title"
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={e =>
+                  dispatch({ type: "SET_FIELD", field: "title", value: e.target.value })
+                }
               />
             </div>
 
@@ -171,7 +169,9 @@ export default function Upload() {
                 id="description"
                 placeholder="Describe your NFT"
                 value={description}
-                onChange={e => setDescription(e.target.value)}
+                onChange={e =>
+                  dispatch({ type: "SET_FIELD", field: "description", value: e.target.value })
+                }
               />
             </div>
 
@@ -197,7 +197,9 @@ export default function Upload() {
                 step="0.05"
                 placeholder="0.05"
                 value={price}
-                onChange={e => setPrice(e.target.value)}
+                onChange={e =>
+                  dispatch({ type: "SET_FIELD", field: "price", value: e.target.value })
+                }
               />
             </div>
 
@@ -208,7 +210,9 @@ export default function Upload() {
                 id="tags"
                 placeholder="art, music, 3D"
                 value={tags}
-                onChange={e => setTags(e.target.value)}
+                onChange={e =>
+                  dispatch({ type: "SET_FIELD", field: "tags", value: e.target.value })
+                }
               />
             </div>
 
