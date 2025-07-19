@@ -23,6 +23,13 @@ export async function tryCatch<T, E = Error>(promise: Promise<T>): Promise<Resul
   }
 }
 
+export function tagsToList(tags: string) {
+  return tags
+    .trim()
+    .split(" ")
+    .map(item => item.replaceAll(",", "").replaceAll(".", ""));
+}
+
 export function isAllowedType(type: string): type is MediaContentType {
   return allowedContentTypes.includes(type as MediaContentType);
 }

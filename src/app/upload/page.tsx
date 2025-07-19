@@ -22,6 +22,8 @@ export default function Upload() {
   const { isConnected } = useAppKitAccount();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [tagInput, setTagInput] = useState("");
+  const [tagList, setTagList] = useState<string[]>([]);
 
   const [error, setError] = useState<string | null>(null);
   const [royaltyError, setRoyaltyError] = useState<string | null>(null);
@@ -64,6 +66,22 @@ export default function Upload() {
       setRoyaltyError("Royalty fee cannot be less than 0%.");
     } else {
       setRoyaltyError(null);
+    }
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === "," || e.key === " ") {
+      e.preventDefault();
+      const trimmed = tagInput.trim().replace(/,$/, "");
+      if (trimmed && !tagList.includes(trimmed)) {
+        setTagList(prev => [...prev, trimmed]);
+        setTagInput("");
+
+        dispatch({ type: "SET_FIELD", field: "tags", value: [...tagList, trimmed].join(",") });
+      }
+    } else if (e.key === "Backspace" && tagInput === "") {
+      setTagList(prev => prev.slice(0, -1));
+      dispatch({ type: "SET_FIELD", field: "tags", value: tagList.slice(0, -1).join(",") });
     }
   };
 
@@ -210,12 +228,24 @@ export default function Upload() {
             {/* Tags */}
             <div className="w-full">
               <Label htmlFor="tags">Tags (comma separated)</Label>
-              <Input
-                id="tags"
-                placeholder="art, music, 3D"
-                value={tags}
-                onChange={handleChange("tags")}
-              />
+              <div className="flex flex-wrap items-center gap-2 border rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-500">
+                {tagList.map(tag => (
+                  <span
+                    key={tag}
+                    className="bg-blue-100 text-blue-700 text-sm px-2 py-1 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                <input
+                  id="tags"
+                  className="flex-grow outline-none text-sm min-w-[100px]"
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                  placeholder="Add tag..."
+                />
+              </div>
             </div>
 
             {error && (
@@ -226,7 +256,7 @@ export default function Upload() {
             )}
 
             <Button onClick={handleUpload} className="w-full mt-2">
-              Upload NFT
+              Mint Your NFT
             </Button>
           </CardContent>
         </Card>

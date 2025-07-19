@@ -57,7 +57,7 @@ export default function Footer() {
             </li>
             <li>
               <Link
-                href="https://github.com"
+                href="https://github.com/CodeAfu/blockchain-frontend"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline"
@@ -66,8 +66,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="mailto:team@mediarights.xyz" className="hover:underline">
-                team@mediarights.xyz
+              <Link href="mailto:team@mediavault.xyz" className="hover:underline">
+                team@mediavault.xyz
               </Link>
             </li>
           </ul>
