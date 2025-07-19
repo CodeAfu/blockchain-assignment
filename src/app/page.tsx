@@ -1,4 +1,3 @@
-import Footer from "@/components/footer";
 import HeroSection from "@/components/hero-section";
 import MarketplacePreview from "@/components/marketplace-preview";
 import TrustSection from "@/components/trust-section";
@@ -11,7 +10,6 @@ export default function Home() {
         <MarketplacePreview />
         <TrustSection />
       </main>
-      <Footer />
     </div>
   );
 }

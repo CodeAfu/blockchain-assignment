@@ -11,8 +11,8 @@ const navLinks = [
     href: "/",
   },
   {
-    label: "Register Media",
-    href: "/media/register",
+    label: "Upload",
+    href: "/upload",
   },
   {
     label: "Sample",
@@ -22,10 +22,6 @@ const navLinks = [
     label: "Test",
     href: "/test",
   },
-  {
-    label: "File Upload",
-    href: "/upload",
-  }
 ];
 
 export default function Header() {

@@ -4,6 +4,7 @@ import "./globals.css";
 import { headers } from "next/headers";
 import Providers from "@/components/providers";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default async function RootLayout({
         <Providers cookies={cookies}>
           <Header />
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>

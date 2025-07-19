@@ -3,7 +3,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 py-10 pb-32">
+    <footer className="bg-gray-900 text-gray-300 py-10 pb-32 mt-8">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8 text-sm">
         {/* Branding */}
         <div>

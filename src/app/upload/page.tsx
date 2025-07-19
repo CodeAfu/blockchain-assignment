@@ -2,14 +2,17 @@
 
 import React, { useReducer, useState } from "react";
 import Image from "next/image";
-import Footer from "@/components/footer";
 import { Button } from "@/components/shadcn-ui/button";
 import { Card, CardContent } from "@/components/shadcn-ui/card";
 import { Input } from "@/components/shadcn-ui/input";
 import { Textarea } from "@/components/shadcn-ui/textarea";
 import { Label } from "@/components/shadcn-ui/label";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { uploadFormReducer, initialUploadFormState } from "@/lib/reducers/upload-form-reducer";
+import {
+  uploadFormReducer,
+  initialUploadFormState,
+  UploadFormState,
+} from "@/lib/reducers/upload-form-reducer";
 
 export default function Upload() {
   const [{ title, description, royaltyFee, price, tags }, dispatch] = useReducer(
@@ -19,7 +22,7 @@ export default function Upload() {
   const { isConnected } = useAppKitAccount();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  
+
   const [error, setError] = useState<string | null>(null);
   const [royaltyError, setRoyaltyError] = useState<string | null>(null);
 
@@ -43,6 +46,13 @@ export default function Upload() {
     }
   };
 
+  const handleChange =
+    (field: keyof UploadFormState) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      dispatch({ type: "SET_FIELD", field, value: e.target.value });
+      setError(null);
+    };
+
   const handleRoyaltyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     dispatch({ type: "SET_FIELD", field: "royaltyFee", value: e.target.value });
@@ -59,7 +69,7 @@ export default function Upload() {
 
   const handleUpload = () => {
     if (!selectedFile) {
-      alert("Please select a file first.");
+      setError("Please select a file first.");
       return;
     }
 
@@ -79,7 +89,7 @@ export default function Upload() {
       return;
     }
 
-    // You would normally send this to your API endpoint here
+    // TODO: Add API endpoint
     console.log("Uploading NFT with data:", {
       file: selectedFile,
       title,
@@ -156,9 +166,7 @@ export default function Upload() {
                 id="title"
                 placeholder="Enter NFT title"
                 value={title}
-                onChange={e =>
-                  dispatch({ type: "SET_FIELD", field: "title", value: e.target.value })
-                }
+                onChange={handleChange("title")}
               />
             </div>
 
@@ -169,9 +177,7 @@ export default function Upload() {
                 id="description"
                 placeholder="Describe your NFT"
                 value={description}
-                onChange={e =>
-                  dispatch({ type: "SET_FIELD", field: "description", value: e.target.value })
-                }
+                onChange={handleChange("description")}
               />
             </div>
 
@@ -197,9 +203,7 @@ export default function Upload() {
                 step="0.05"
                 placeholder="0.05"
                 value={price}
-                onChange={e =>
-                  dispatch({ type: "SET_FIELD", field: "price", value: e.target.value })
-                }
+                onChange={handleChange("price")}
               />
             </div>
 
@@ -210,9 +214,7 @@ export default function Upload() {
                 id="tags"
                 placeholder="art, music, 3D"
                 value={tags}
-                onChange={e =>
-                  dispatch({ type: "SET_FIELD", field: "tags", value: e.target.value })
-                }
+                onChange={handleChange("tags")}
               />
             </div>
 
@@ -229,9 +231,6 @@ export default function Upload() {
           </CardContent>
         </Card>
       </main>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
