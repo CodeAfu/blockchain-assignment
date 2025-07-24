@@ -108,15 +108,30 @@ npm run deploy
 
 ## Features
 
-- Upload to IPFS via Pinata 🔨
-- Mint NFT for Uploaded Media 🔨
-- Display Wallet Info ✅
-- Register Media ❌
-- View Media Details ❌
-- View Media Upload History ❌
-- Automatic Royalty Enrollment ❌
-- Prove Ownership ❓
-- Transfer Ownership ❓
+### Smart Contract
+
+1. Write Functions
+
+    - `listForSale()` - List NFT for sale
+    - `unlistFromSale()` - Remove from marketplace
+    - `buyNFT()` - Purchase NFT with automatic royalty distribution
+    - `mintNFT()` - Now accepts minting fee and initial sale price
+
+2. Read Functions
+
+    - `useSaleInfo()` - Get complete marketplace data for an NFT
+    - `useMintingFee()` - Get current platform minting fee
+    - `usePlatformRoyalty()` - Get platform royalty percentage
+
+3. Event Watchers
+
+    - `useWatchMediaListed()` - Track when NFTs are listed
+    - `useWatchMediaSold()` - Track marketplace sales
+
+4. Helper Functions
+
+`convertPercentToBasisPoints()` - Convert frontend % to contract basis points
+`convertBasisPointsToPercent()` - Convert basis points back to %
 
 ## Libraries Used
 

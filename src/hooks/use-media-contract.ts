@@ -4,12 +4,19 @@ import {
   useReadContract,
   useWaitForTransactionReceipt,
   useWatchContractEvent,
-  // useBalance,
 } from "wagmi";
 import { MEDIA_CONTRACT_ABI, MEDIA_CONTRACT_ADDRESS } from "@/lib/consts";
-import { Address, Hash, decodeEventLog } from "viem";
+import { Address, Hash, decodeEventLog, parseEther } from "viem";
 import { useState, useCallback, useEffect } from "react";
-import { MediaMintedEvent, MediaAccessedEvent, MediaDetails, NFTMediaItem } from "@/types/media";
+import { 
+  MediaMintedEvent, 
+  MediaAccessedEvent, 
+  MediaListedEvent, 
+  MediaSoldEvent,
+  MediaDetails, 
+  NFTMediaItem,
+  SaleInfo 
+} from "@/types/media";
 
 export function useMediaContract() {
   const [lastTxHash, setLastTxHash] = useState<Hash>();
@@ -71,22 +78,86 @@ export function useMediaContract() {
     }
   }, [isConfirmed, txError]);
 
+  // READ FUNCTIONS FOR PLATFORM SETTINGS
+  const useMintingFee = () => {
+    return useReadContract({
+      address: MEDIA_CONTRACT_ADDRESS as Address,
+      abi: MEDIA_CONTRACT_ABI,
+      functionName: "mintingFee",
+    });
+  };
+
+  const usePlatformRoyalty = () => {
+    return useReadContract({
+      address: MEDIA_CONTRACT_ADDRESS as Address,
+      abi: MEDIA_CONTRACT_ABI,
+      functionName: "platformRoyalty",
+    });
+  };
+
   // WRITE FUNCTIONS
   const mintNFT = useCallback(
-    (recipient: Address, metadataURI: string, royaltyFee: bigint) => {
+    (
+      recipient: Address, 
+      metadataURI: string, 
+      creatorRoyaltyBps: bigint, 
+      initialSalePrice: bigint,
+      mintingFee: bigint
+    ) => {
       setPendingTx("mintNFT");
       writeContract({
         address: MEDIA_CONTRACT_ADDRESS as Address,
         abi: MEDIA_CONTRACT_ABI,
         functionName: "mintNFT",
-        args: [recipient, metadataURI, royaltyFee],
+        args: [recipient, metadataURI, creatorRoyaltyBps, initialSalePrice],
+        value: mintingFee,
+      });
+    },
+    [writeContract]
+  );
+
+  const listForSale = useCallback(
+    (tokenId: bigint, price: bigint) => {
+      setPendingTx("listForSale");
+      writeContract({
+        address: MEDIA_CONTRACT_ADDRESS as Address,
+        abi: MEDIA_CONTRACT_ABI,
+        functionName: "listForSale",
+        args: [tokenId, price],
+      });
+    },
+    [writeContract]
+  );
+
+  const unlistFromSale = useCallback(
+    (tokenId: bigint) => {
+      setPendingTx("unlistFromSale");
+      writeContract({
+        address: MEDIA_CONTRACT_ADDRESS as Address,
+        abi: MEDIA_CONTRACT_ABI,
+        functionName: "unlistFromSale",
+        args: [tokenId],
+      });
+    },
+    [writeContract]
+  );
+
+  const buyNFT = useCallback(
+    (tokenId: bigint, paymentAmount: bigint) => {
+      setPendingTx("buyNFT");
+      writeContract({
+        address: MEDIA_CONTRACT_ADDRESS as Address,
+        abi: MEDIA_CONTRACT_ABI,
+        functionName: "buyNFT",
+        args: [tokenId],
+        value: paymentAmount,
       });
     },
     [writeContract]
   );
 
   const accessMedia = useCallback(
-    (tokenId: bigint, paymentAmount: bigint) => {
+    (tokenId: bigint, paymentAmount: bigint = parseEther("0.0001")) => {
       setPendingTx("accessMedia");
       writeContract({
         address: MEDIA_CONTRACT_ADDRESS as Address,
@@ -136,35 +207,12 @@ export function useMediaContract() {
     });
   };
 
-  const useTokenOfOwnerByIndex = (owner: Address | undefined, index: bigint | undefined) => {
+  // NEW: Get complete sale information for an NFT
+  const useSaleInfo = (tokenId: bigint | undefined) => {
     return useReadContract({
       address: MEDIA_CONTRACT_ADDRESS as Address,
       abi: MEDIA_CONTRACT_ABI,
-      functionName: "tokenOfOwnerByIndex",
-      args: owner && index !== undefined ? [owner, index] : undefined,
-      query: {
-        enabled: !!owner && index !== undefined,
-      },
-    });
-  };
-
-  const useGetRoyaltyFee = (tokenId: bigint | undefined) => {
-    return useReadContract({
-      address: MEDIA_CONTRACT_ADDRESS as Address,
-      abi: MEDIA_CONTRACT_ABI,
-      functionName: "getRoyaltyFee",
-      args: tokenId !== undefined ? [tokenId] : undefined,
-      query: {
-        enabled: tokenId !== undefined,
-      },
-    });
-  };
-
-  const useGetCreator = (tokenId: bigint | undefined) => {
-    return useReadContract({
-      address: MEDIA_CONTRACT_ADDRESS as Address,
-      abi: MEDIA_CONTRACT_ABI,
-      functionName: "getCreator",
+      functionName: "getSaleInfo",
       args: tokenId !== undefined ? [tokenId] : undefined,
       query: {
         enabled: tokenId !== undefined,
@@ -207,18 +255,80 @@ export function useMediaContract() {
               topics: log.topics,
             });
 
-            const [tokenId, creator, metadataURI, royaltyFee] = decoded.args as [
+            const [tokenId, creator, metadataURI, creatorRoyalty, initialPrice] = decoded.args as [
               bigint,
               Address,
               string,
               bigint,
+              bigint,
             ];
 
-            if (tokenId !== undefined && creator && metadataURI && royaltyFee !== undefined) {
-              onEvent({ tokenId, creator, metadataURI, royaltyFee });
+            if (tokenId !== undefined && creator && metadataURI && creatorRoyalty !== undefined) {
+              onEvent({ tokenId, creator, metadataURI, creatorRoyalty, initialPrice });
             }
           } catch (error) {
             console.error("Failed to decode MediaMinted event:", error);
+          }
+        });
+      },
+    });
+  };
+
+  const useWatchMediaListed = (onEvent: (event: MediaListedEvent) => void) => {
+    useWatchContractEvent({
+      address: MEDIA_CONTRACT_ADDRESS as Address,
+      abi: MEDIA_CONTRACT_ABI,
+      eventName: "MediaListed",
+      onLogs: logs => {
+        logs.forEach(log => {
+          try {
+            const decoded = decodeEventLog({
+              abi: MEDIA_CONTRACT_ABI,
+              data: log.data,
+              topics: log.topics,
+            });
+
+            const [tokenId, seller, price] = decoded.args as [bigint, Address, bigint];
+
+            if (tokenId !== undefined && seller && price !== undefined) {
+              onEvent({ tokenId, seller, price });
+            }
+          } catch (error) {
+            console.error("Failed to decode MediaListed event:", error);
+          }
+        });
+      },
+    });
+  };
+
+  const useWatchMediaSold = (onEvent: (event: MediaSoldEvent) => void) => {
+    useWatchContractEvent({
+      address: MEDIA_CONTRACT_ADDRESS as Address,
+      abi: MEDIA_CONTRACT_ABI,
+      eventName: "MediaSold",
+      onLogs: logs => {
+        logs.forEach(log => {
+          try {
+            const decoded = decodeEventLog({
+              abi: MEDIA_CONTRACT_ABI,
+              data: log.data,
+              topics: log.topics,
+            });
+
+            const [tokenId, seller, buyer, price, creatorRoyalty, platformFee] = decoded.args as [
+              bigint,
+              Address,
+              Address,
+              bigint,
+              bigint,
+              bigint,
+            ];
+
+            if (tokenId !== undefined && seller && buyer && price !== undefined) {
+              onEvent({ tokenId, seller, buyer, price, creatorRoyalty, platformFee });
+            }
+          } catch (error) {
+            console.error("Failed to decode MediaSold event:", error);
           }
         });
       },
@@ -254,13 +364,29 @@ export function useMediaContract() {
 
   // UTILITY FUNCTIONS
   const formatMediaDetails = (
-    rawData: readonly [bigint, Address] | undefined
+    rawData: readonly [bigint, Address, bigint, boolean] | undefined
   ): MediaDetails | null => {
-    if (!rawData || rawData.length < 2) return null;
+    if (!rawData || rawData.length < 4) return null;
 
     return {
-      royaltyFee: rawData[0],
+      creatorRoyalty: rawData[0],
       creator: rawData[1],
+      salePrice: rawData[2],
+      isForSale: rawData[3],
+    };
+  };
+
+  const formatSaleInfo = (
+    rawData: readonly [boolean, bigint, Address, Address, bigint] | undefined
+  ): SaleInfo | null => {
+    if (!rawData || rawData.length < 5) return null;
+
+    return {
+      isForSale: rawData[0],
+      price: rawData[1],
+      owner: rawData[2],
+      creator: rawData[3],
+      creatorRoyalty: rawData[4],
     };
   };
 
@@ -268,7 +394,8 @@ export function useMediaContract() {
     tokenId: bigint,
     tokenURI: string | undefined,
     owner: Address | undefined,
-    mediaDetails: MediaDetails | null
+    mediaDetails: MediaDetails | null,
+    saleInfo: SaleInfo | null
   ): NFTMediaItem | null => {
     if (!tokenURI || !owner || !mediaDetails) return null;
 
@@ -277,33 +404,52 @@ export function useMediaContract() {
       tokenURI,
       owner,
       creator: mediaDetails.creator,
-      royaltyFee: mediaDetails.royaltyFee,
+      creatorRoyalty: mediaDetails.creatorRoyalty,
+      salePrice: saleInfo?.price || mediaDetails.salePrice,
+      isForSale: saleInfo?.isForSale || mediaDetails.isForSale,
     };
+  };
+
+  // Helper functions for frontend integration
+  const convertPercentToBasisPoints = (percent: number): bigint => {
+    return BigInt(Math.floor(percent * 100));
+  };
+
+  const convertBasisPointsToPercent = (basisPoints: bigint): number => {
+    return Number(basisPoints) / 100;
   };
 
   // Contract state and utilities
   const contract = {
     // Write functions
     mintNFT,
+    listForSale,
+    unlistFromSale,
+    buyNFT,
     accessMedia,
 
     // Read hooks
     useTokenURI,
     useOwnerOf,
     useBalanceOf,
-    useTokenOfOwnerByIndex,
-    useGetRoyaltyFee,
-    useGetCreator,
+    useSaleInfo,
     useTokenCount,
     useMediaData,
+    useMintingFee,
+    usePlatformRoyalty,
 
     // Event watchers
     useWatchMediaMinted,
+    useWatchMediaListed,
+    useWatchMediaSold,
     useWatchMediaAccessed,
 
     // Utilities
     formatMediaDetails,
+    formatSaleInfo,
     formatNFTMediaItem,
+    convertPercentToBasisPoints,
+    convertBasisPointsToPercent,
 
     // Transaction state
     isWritePending,
@@ -323,11 +469,11 @@ export function useMediaContract() {
   return contract;
 }
 
-// Hook for managing NFT media library
-export function useMediaLibrary() {
+// Hook for managing NFT marketplace
+export function useMarketplace() {
   const contract = useMediaContract();
   const { data: tokenCount, refetch: refetchTokenCount } = contract.useTokenCount();
-  const [mediaCache, setMediaCache] = useState<Map<bigint, NFTMediaItem>>(new Map());
+  const [marketplaceCache, setMarketplaceCache] = useState<Map<bigint, NFTMediaItem>>(new Map());
 
   // Generate array of token IDs based on token count
   const generateTokenIds = useCallback((count: bigint): bigint[] => {
@@ -340,28 +486,24 @@ export function useMediaLibrary() {
 
   const tokenIds = tokenCount ? generateTokenIds(tokenCount as bigint) : [];
 
-  // Fetch multiple NFT media items
-  const fetchMediaItems = useCallback(
-    async (tokenIds: bigint[]) => {
-      const items: NFTMediaItem[] = [];
+  // Fetch items currently for sale
+  const fetchForSaleItems = useCallback(async (): Promise<NFTMediaItem[]> => {
+    const forSaleItems: NFTMediaItem[] = [];
+    
+    // In a production app, you'd want to implement this more efficiently
+    // possibly by maintaining an index of for-sale items or using events
+    
+    return forSaleItems;
+  }, []);
 
-      for (const tokenId of tokenIds) {
-        if (mediaCache.has(tokenId)) {
-          const cachedItem = mediaCache.get(tokenId);
-          if (cachedItem) items.push(cachedItem);
-        }
-        // Note: In a real implementation, you'd want to batch these calls
-        // or use a different pattern to avoid making too many individual calls
-      }
+  // Clear cache when marketplace changes
+  contract.useWatchMediaListed(() => {
+    setMarketplaceCache(new Map());
+    refetchTokenCount();
+  });
 
-      return items;
-    },
-    [mediaCache]
-  );
-
-  // Clear cache when new media is minted
-  contract.useWatchMediaMinted(() => {
-    setMediaCache(new Map());
+  contract.useWatchMediaSold(() => {
+    setMarketplaceCache(new Map());
     refetchTokenCount();
   });
 
@@ -369,8 +511,8 @@ export function useMediaLibrary() {
     ...contract,
     tokenCount: tokenCount as bigint | undefined,
     tokenIds,
-    mediaCache,
-    fetchMediaItems,
+    marketplaceCache,
+    fetchForSaleItems,
     refetchTokenCount,
   };
 }
@@ -380,34 +522,15 @@ export function useUserMedia(userAddress: Address | undefined) {
   const contract = useMediaContract();
   const { data: userBalance, refetch: refetchUserBalance } = contract.useBalanceOf(userAddress);
 
-  // Generate array of indices for user's tokens
-  const generateUserTokenIndices = useCallback((balance: bigint): bigint[] => {
-    const indices: bigint[] = [];
-    for (let i = BigInt(0); i < balance; i++) {
-      indices.push(i);
-    }
-    return indices;
-  }, []);
-
-  const userTokenIndices = userBalance ? generateUserTokenIndices(userBalance as bigint) : [];
-
-  // Fetch user's token IDs
-  const fetchUserTokenIds = useCallback(async (): Promise<bigint[]> => {
-    if (!userAddress || !userBalance) return [];
-
-    const tokenIds: bigint[] = [];
-
-    // for (const index of userTokenIndices) {
-    //   // Note: You would need to implement this using the actual tokenOfOwnerByIndex calls
-    //   // This is a simplified version - in practice you'd want to batch these calls
-    // }
-
-    return tokenIds;
-  }, [userAddress, userBalance, userTokenIndices]);
-
-  // Refresh user media when they mint new NFTs
+  // Refresh user media when they mint new NFTs or buy/sell
   contract.useWatchMediaMinted(event => {
     if (event.creator === userAddress) {
+      refetchUserBalance();
+    }
+  });
+
+  contract.useWatchMediaSold(event => {
+    if (event.seller === userAddress || event.buyer === userAddress) {
       refetchUserBalance();
     }
   });
@@ -415,50 +538,64 @@ export function useUserMedia(userAddress: Address | undefined) {
   return {
     ...contract,
     userBalance: userBalance as bigint | undefined,
-    userTokenIndices,
-    fetchUserTokenIds,
     refetchUserBalance,
   };
 }
 
-// Hook for individual NFT management
+// Hook for individual NFT management with marketplace data
 export function useNFTMedia(tokenId: bigint | undefined) {
   const contract = useMediaContract();
 
   const { data: tokenURI, refetch: refetchTokenURI } = contract.useTokenURI(tokenId);
   const { data: owner, refetch: refetchOwner } = contract.useOwnerOf(tokenId);
-  const { data: royaltyFee, refetch: refetchRoyaltyFee } = contract.useGetRoyaltyFee(tokenId);
-  const { data: creator, refetch: refetchCreator } = contract.useGetCreator(tokenId);
   const { data: mediaData, refetch: refetchMediaData } = contract.useMediaData(tokenId);
+  const { data: saleInfo, refetch: refetchSaleInfo } = contract.useSaleInfo(tokenId);
 
   const mediaDetails = contract.formatMediaDetails(
-    mediaData as readonly [bigint, Address] | undefined
+    mediaData as readonly [bigint, Address, bigint, boolean] | undefined
+  );
+
+  const formattedSaleInfo = contract.formatSaleInfo(
+    saleInfo as readonly [boolean, bigint, Address, Address, bigint] | undefined
   );
 
   const nftMediaItem = contract.formatNFTMediaItem(
     tokenId || BigInt(0),
     tokenURI as string | undefined,
     owner as Address | undefined,
-    mediaDetails
+    mediaDetails,
+    formattedSaleInfo
   );
 
   const refetchAll = useCallback(() => {
     refetchTokenURI();
     refetchOwner();
-    refetchRoyaltyFee();
-    refetchCreator();
     refetchMediaData();
-  }, [refetchTokenURI, refetchOwner, refetchRoyaltyFee, refetchCreator, refetchMediaData]);
+    refetchSaleInfo();
+  }, [refetchTokenURI, refetchOwner, refetchMediaData, refetchSaleInfo]);
+
+  // Refresh data when NFT is listed/unlisted/sold
+  contract.useWatchMediaListed(event => {
+    if (event.tokenId === tokenId) {
+      refetchSaleInfo();
+    }
+  });
+
+  contract.useWatchMediaSold(event => {
+    if (event.tokenId === tokenId) {
+      refetchAll();
+    }
+  });
 
   return {
     ...contract,
     tokenId,
     tokenURI: tokenURI as string | undefined,
     owner: owner as Address | undefined,
-    royaltyFee: royaltyFee as bigint | undefined,
-    creator: creator as Address | undefined,
-    mediaData: mediaData as readonly [bigint, Address] | undefined,
+    mediaData: mediaData as readonly [bigint, Address, bigint, boolean] | undefined,
+    saleInfo: saleInfo as readonly [boolean, bigint, Address, Address, bigint] | undefined,
     mediaDetails,
+    formattedSaleInfo,
     nftMediaItem,
     refetchAll,
   };

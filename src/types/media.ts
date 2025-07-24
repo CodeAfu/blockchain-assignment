@@ -1,5 +1,5 @@
 import { FileType } from "@prisma/client";
-import { Address, Hash } from "viem";
+import { Address } from "viem";
 
 export const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/svg+xml"] as const;
 export const audioTypes = ["audio/mpeg", "audio/ogg"] as const;
@@ -17,25 +17,42 @@ export interface MediaItem {
   royaltyFee: bigint;
 }
 
-export interface MediaRegisteredEvent {
-  mediaId: Hash;
-  owner: Address;
-  title: string;
-  ipfsHash: string;
-  royaltyFee: bigint;
+// Events
+export interface MediaMintedEvent {
+  tokenId: bigint;
+  creator: Address;
+  metadataURI: string;
+  creatorRoyalty: bigint;
+  initialPrice: bigint;
 }
+
+export interface MediaListedEvent {
+  tokenId: bigint;
+  seller: Address;
+  price: bigint;
+}
+
+export interface MediaSoldEvent {
+  tokenId: bigint;
+  seller: Address;
+  buyer: Address;
+  price: bigint;
+  creatorRoyalty: bigint;
+  platformFee: bigint;
+}
+
+// export interface MediaRegisteredEvent {
+//   mediaId: Hash;
+//   owner: Address;
+//   title: string;
+//   ipfsHash: string;
+//   royaltyFee: bigint;
+// }
 
 export interface MediaAccessedEvent {
   tokenId: bigint;
   buyer: Address;
   amountPaid: bigint;
-}
-
-export interface MediaMintedEvent {
-  tokenId: bigint;
-  creator: Address;
-  metadataURI: string;
-  royaltyFee: bigint;
 }
 
 export interface NFTData {
@@ -69,9 +86,19 @@ export interface NFTMetadata {
   };
 }
 
-export interface MediaDetails {
-  royaltyFee: bigint;
+export interface SaleInfo {
   creator: Address;
+  creatorRoyalty: bigint
+  owner: Address;
+  price: bigint;
+  isForSale: boolean;
+}
+
+export interface MediaDetails {
+  creator: Address;
+  creatorRoyalty: bigint;
+  salePrice: bigint;
+  isForSale: boolean;
 }
 
 export interface NFTMediaItem {
@@ -79,7 +106,9 @@ export interface NFTMediaItem {
   tokenURI: string;
   owner: Address;
   creator: Address;
-  royaltyFee: bigint;
+  creatorRoyalty: bigint;
+  salePrice: bigint;
+  isForSale: boolean;
 }
 
 export interface MediaNFTInput {

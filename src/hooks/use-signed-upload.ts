@@ -11,7 +11,7 @@ import { NFTData } from "@/types/media";
 import { devLog, getFileType } from "@/lib/utils";
 import { useMediaContract } from "./use-media-contract";
 import { useState } from "react";
-import { Address } from "viem";
+import { Address, parseEther } from "viem";
 import { Result } from "@/types/result";
 import { UploadResponse } from "pinata";
 
@@ -20,13 +20,17 @@ type UploadStatus = "unknown" | "rejected" | "failed" | "no-wallet" | null;
 export function useSignedUpload() {
   const { address, isConnected } = useAccount();
   const { signMessageAsync, isPending } = useSignMessage();
-  const { mintNFT, mintedTokenId } = useMediaContract();
   const [status, setStatus] = useState<UploadStatus>(null);
+  // const { mintNFT, mintedTokenId } = useMediaContract();
+  const contract = useMediaContract();
+
+  const { data: mintingFee } = contract.useMintingFee();
 
   const uploadWithSignature = async (
     file: File,
     nftData: Omit<NFTData, "creatorAddress" | "ownerAddress" | "tokenId">
   ) => {
+
     if (!isConnected || !address) {
       setStatus("no-wallet");
       return {
