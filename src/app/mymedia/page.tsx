@@ -6,7 +6,6 @@ import Footer from "@/components/footer";
 import { Card, CardContent } from "@/components/shadcn-ui/card";
 import Container from "@/components/container";
 
-// 暂时模拟数据为空，模拟“没有媒体内容”
 const images: { url: string }[] = [{ url: "/assets/insight.png" }];
 const videos: { url: string }[] = [];
 const audios: { url: string }[] = [];

@@ -85,7 +85,7 @@ export default function Upload() {
     }
   };
 
-  const handleUpload = () => {
+const handleUpload = () => {
     if (!selectedFile) {
       setError("Please select a file first.");
       return;
