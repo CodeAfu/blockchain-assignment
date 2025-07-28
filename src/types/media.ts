@@ -1,4 +1,4 @@
-import { FileType } from "@prisma/client";
+import { FileType, MediaNFT } from "@prisma/client";
 import { Address } from "viem";
 
 export const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/svg+xml"] as const;
@@ -55,20 +55,48 @@ export interface MediaAccessedEvent {
   amountPaid: bigint;
 }
 
-export interface NFTData {
-  tokenId: number;
-  creatorAddress: string;
-  ownerAddress: string;
+export interface NFTDto {
   title: string;
-  description?: string;
-  royaltyFee: bigint;
-  royaltyInBasisPoints?: bigint;
-  price: bigint;
-  priceInWei?: bigint;
-  tags?: string[];
-  fileType?: FileType;
-  fileSize?: bigint;
+  description: string | null;
+  royaltyFee: number;
+  price: number;
+  tags: string[];
 }
+
+export interface CreateNFTDataReturnType {
+  creatorAddress: Address;
+  ownerAddress: Address;
+  fileType: FileType | null;
+  fileSize: bigint;
+  priceInWei: bigint;
+  royaltyFeeInBasisPoints: bigint;
+  royaltyFee: number;
+  title: string;
+  description: string | null;
+  price: number;
+  tags: string[];
+}
+
+export interface NFTData extends Omit<MediaNFT, "priceInWei" | "royaltyFeeInBasisPoints"> {
+  royaltyFee: number;
+  priceInWei?: bigint;
+  royaltyFeeInBasisPoints?: bigint;
+}
+
+// export interface NFTData {
+//   tokenId: number;
+//   creatorAddress: string;
+//   ownerAddress: string;
+//   title: string;
+//   description?: string;
+//   royaltyFee: bigint;
+//   royaltyInBasisPoints: bigint;
+//   price: bigint;
+//   priceInWei: bigint;
+//   tags?: string[];
+//   fileType?: FileType;
+//   fileSize?: bigint;
+// }
 
 export interface NFTMetadata {
   name: string;

@@ -9,16 +9,16 @@ export class DatabaseService {
     creatorAddress: string;
     ownerAddress: string;
     title: string;
-    description?: string;
+    description: string | null;
     cid: string;
     metadataCid: string;
     royaltyFeeInBasisPoints: bigint;
     price: number;
     priceInWei: bigint;
-    tags?: string[];
-    fileType?: FileType;
-    fileSize?: bigint;
-    domain?: string;
+    tags: string[];
+    fileType: FileType | null;
+    fileSize: bigint | null;
+    domain: string | null;
   }): Promise<MediaNFT> {
     try {
       return await prisma.mediaNFT.create({
@@ -68,14 +68,9 @@ export class DatabaseService {
   }
 
   // Get all media NFTs with pagination
-  async getAllMediaNFTs(
-    limit: number = 50,
-    offset: number = 0,
-    category?: string
-  ): Promise<MediaNFT[]> {
+  async getAllMediaNFTs(limit: number = 50, offset: number = 0): Promise<MediaNFT[]> {
     try {
       return await prisma.mediaNFT.findMany({
-        where: category ? { category } : undefined,
         orderBy: { createdAt: "desc" },
         take: limit,
         skip: offset,
@@ -226,12 +221,6 @@ export class DatabaseService {
             },
             {
               description: {
-                contains: query,
-                mode: "insensitive",
-              },
-            },
-            {
-              category: {
                 contains: query,
                 mode: "insensitive",
               },

@@ -10,8 +10,9 @@ import {
   PinataSDK,
   UploadResponse,
 } from "pinata";
-import { NFTData, NFTMetadata } from "@/types/media";
+import { CreateNFTDataReturnType, NFTData, NFTMetadata } from "@/types/media";
 import { tryCatch } from "@/utils/try-catch";
+import { MediaNFT } from "@prisma/client";
 
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT,
@@ -97,13 +98,13 @@ export async function getMetadata(cid: string) {
   return result;
 }
 
-export async function saveToDatabase(nftData: NFTData & { cid: string; metadataCid: string }) {
+export async function saveToDatabase(nftData: Omit<MediaNFT, "id" | "createdAt" | "updatedAt">) {
   const dbResult = await tryCatch(
     db.createMediaNFT({
       ...nftData,
       cid: nftData.cid,
       metadataCid: nftData.metadataCid,
-      domain: process.env.NEXT_PUBLIC_GATEWAY_URL,
+      domain: process.env.NEXT_PUBLIC_GATEWAY_URL || null,
     })
   );
 
@@ -224,14 +225,15 @@ export async function storeMetadata(file: File, filename: string): Promise<Resul
   return uploadResult;
 }
 
-export async function createMetadata(
-  fileData: UploadResponse,
-  nftData: Omit<NFTData, "tokenId">
-): Promise<NFTMetadata> {
+export async function createMetadata(metadataArgs: {
+  cid: string;
+  nftData: Omit<NFTData, "tokenId"> | NFTData | CreateNFTDataReturnType;
+}): Promise<NFTMetadata> {
+  const { cid, nftData } = metadataArgs;
   return {
     name: nftData.title,
     description: nftData.description ?? "",
-    image: `ipfs://${fileData.cid}`,
+    image: `ipfs://${cid}`,
     attributes: [
       { trait_type: "File Type", value: nftData.fileType || "Unknown" },
       { trait_type: "Price", value: `${nftData.price}%` },

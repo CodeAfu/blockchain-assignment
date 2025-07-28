@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/shadcn-ui/button";
 import { Card, CardContent } from "@/components/shadcn-ui/card";
@@ -14,9 +14,9 @@ import {
 } from "@/lib/reducers/upload-form-reducer";
 import { useSignedUpload } from "@/hooks/use-signed-upload";
 import { devLog } from "@/utils/logging";
-import { parseEther } from "viem";
 
 export default function Upload() {
+  const [mounted, setMounted] = useState<boolean>(false);
   const { uploadWithSignature, isConnected, isPending } = useSignedUpload();
   const [{ title, description, royaltyFee, price, tags }, dispatch] = useReducer(
     uploadFormReducer,
@@ -29,6 +29,10 @@ export default function Upload() {
 
   const [error, setError] = useState<string | null>(null);
   const [royaltyError, setRoyaltyError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -109,12 +113,11 @@ export default function Upload() {
       return;
     }
 
-    // TODO: Add API endpoint
-    const nftData = {
+    const nftDto = {
       title,
       description,
-      royaltyFee: parseEther(numericRoyalty.toString()),
-      price: parseEther(price),
+      royaltyFee: numericRoyalty,
+      price: Number(price),
       tags: tags
         .split(",")
         .map(tag => tag.trim())
@@ -123,7 +126,7 @@ export default function Upload() {
 
     devLog("Uploading...");
 
-    await uploadWithSignature(selectedFile, nftData);
+    await uploadWithSignature(selectedFile, nftDto);
 
     devLog("Uploaded file with data:", {
       file: selectedFile,
@@ -146,6 +149,8 @@ export default function Upload() {
     setTagInput("");
     alert("NFT has been uploaded!");
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="flex flex-col bg-gray-50">
