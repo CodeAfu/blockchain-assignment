@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/shadcn-utils";
 import React from "react";
 
 export default function Container({

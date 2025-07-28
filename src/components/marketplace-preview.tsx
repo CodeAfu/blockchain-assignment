@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Container from "./container";
 import { getAccessLinkByCid, getFiles } from "@/app/actions";
-import { getFileBaseName } from "@/lib/utils";
 import { SkeletonCard } from "./skeleton-card";
+import { getFileBaseName } from "@/utils/file-utils";
 
 interface NFTView {
   id: number;

@@ -14,7 +14,7 @@ export default function Wallet() {
           <Button onClick={handleDisconnect}>Disconnect</Button>
           <div className="flex flex-col tracking-tight text-sm items-end justify-end">
             <span className="text-gray-500 text-xs">{address}</span>
-            <span>{balance} ETH</span>
+            <span>{balance.toLocaleString()} ETH</span>
           </div>
           {/* <appkit-account-button balance="show" /> */}
         </div>

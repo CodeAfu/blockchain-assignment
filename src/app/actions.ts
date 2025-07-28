@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/database";
-import { tryCatch, devLog } from "@/lib/utils";
+import { devLog } from "@/utils/logging";
 import { Result } from "@/types/result";
 import {
   FileListResponse,
@@ -11,6 +11,7 @@ import {
   UploadResponse,
 } from "pinata";
 import { NFTData, NFTMetadata } from "@/types/media";
+import { tryCatch } from "@/utils/try-catch";
 
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT,
@@ -232,8 +233,8 @@ export async function createMetadata(
     description: nftData.description ?? "",
     image: `ipfs://${fileData.cid}`,
     attributes: [
-      { trait_type: "Category", value: nftData.category || "Uncategorized" },
       { trait_type: "File Type", value: nftData.fileType || "Unknown" },
+      { trait_type: "Price", value: `${nftData.price}%` },
       { trait_type: "Royalty Fee", value: `${nftData.royaltyFee}%` },
     ],
   };

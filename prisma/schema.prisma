@@ -20,22 +20,23 @@ enum FileType {
 }
 
 model MediaNFT {
-  id             String    @id @default(cuid())
-  tokenId        Int       @unique
-  creatorAddress String    @db.VarChar(42)
-  ownerAddress   String    @db.VarChar(42)
-  title          String    @db.VarChar(255)
-  description    String?   @db.Text
-  cid            String    @db.VarChar(100)
-  metadataCid    String    @db.VarChar(100)
-  royaltyFee     BigInt
-  category       String?   @db.VarChar(50)
-  tags           String[]
-  fileType       FileType?
-  fileSize       BigInt?
-  domain         String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id                      String    @id @default(cuid())
+  tokenId                 Int       @unique
+  creatorAddress          String    @db.VarChar(42)
+  ownerAddress            String    @db.VarChar(42)
+  title                   String    @db.VarChar(255)
+  description             String?   @db.Text
+  royaltyFeeInBasisPoints BigInt
+  price                   Float // Ethers
+  priceInWei              BigInt // On-chain use
+  tags                    String[]
+  cid                     String    @db.VarChar(100)
+  metadataCid             String    @db.VarChar(100)
+  fileType                FileType?
+  fileSize                BigInt?
+  domain                  String?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
 
   accessLogs MediaAccessLog[]
   transfers  MediaTransfer[]
@@ -43,6 +44,8 @@ model MediaNFT {
   @@index([tokenId])
   @@index([creatorAddress])
   @@index([ownerAddress])
+  @@index([cid])
+  @@index([metadataCid])
 }
 
 model MediaAccessLog {

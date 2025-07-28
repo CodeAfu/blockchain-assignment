@@ -62,7 +62,9 @@ export interface NFTData {
   title: string;
   description?: string;
   royaltyFee: bigint;
-  category?: string;
+  royaltyInBasisPoints?: bigint;
+  price: bigint;
+  priceInWei?: bigint;
   tags?: string[];
   fileType?: FileType;
   fileSize?: bigint;
@@ -88,7 +90,7 @@ export interface NFTMetadata {
 
 export interface SaleInfo {
   creator: Address;
-  creatorRoyalty: bigint
+  creatorRoyalty: bigint;
   owner: Address;
   price: bigint;
   isForSale: boolean;

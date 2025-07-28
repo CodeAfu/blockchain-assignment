@@ -7,19 +7,21 @@ import { Card, CardContent } from "@/components/shadcn-ui/card";
 import { Input } from "@/components/shadcn-ui/input";
 import { Textarea } from "@/components/shadcn-ui/textarea";
 import { Label } from "@/components/shadcn-ui/label";
-import { useAppKitAccount } from "@reown/appkit/react";
 import {
   uploadFormReducer,
   initialUploadFormState,
   UploadFormState,
 } from "@/lib/reducers/upload-form-reducer";
+import { useSignedUpload } from "@/hooks/use-signed-upload";
+import { devLog } from "@/utils/logging";
+import { parseEther } from "viem";
 
 export default function Upload() {
+  const { uploadWithSignature, isConnected, isPending } = useSignedUpload();
   const [{ title, description, royaltyFee, price, tags }, dispatch] = useReducer(
     uploadFormReducer,
     initialUploadFormState
   );
-  const { isConnected } = useAppKitAccount();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState("");
@@ -85,7 +87,7 @@ export default function Upload() {
     }
   };
 
-const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) {
       setError("Please select a file first.");
       return;
@@ -108,7 +110,22 @@ const handleUpload = () => {
     }
 
     // TODO: Add API endpoint
-    console.log("Uploading NFT with data:", {
+    const nftData = {
+      title,
+      description,
+      royaltyFee: parseEther(numericRoyalty.toString()),
+      price: parseEther(price),
+      tags: tags
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(tag => tag !== ""),
+    };
+
+    devLog("Uploading...");
+
+    await uploadWithSignature(selectedFile, nftData);
+
+    devLog("Uploaded file with data:", {
       file: selectedFile,
       title,
       description,
@@ -126,7 +143,8 @@ const handleUpload = () => {
     dispatch({ type: "RESET" });
     setError(null);
     setRoyaltyError(null);
-    alert("NFT uploaded (simulated)!");
+    setTagInput("");
+    alert("NFT has been uploaded!");
   };
 
   return (
@@ -255,7 +273,7 @@ const handleUpload = () => {
               </div>
             )}
 
-            <Button onClick={handleUpload} className="w-full mt-2">
+            <Button onClick={handleUpload} disabled={isPending} className="w-full mt-2">
               Mint Your NFT
             </Button>
           </CardContent>

@@ -12,8 +12,9 @@ export class DatabaseService {
     description?: string;
     cid: string;
     metadataCid: string;
-    royaltyFee: bigint;
-    category?: string;
+    royaltyFeeInBasisPoints: bigint;
+    price: number;
+    priceInWei: bigint;
     tags?: string[];
     fileType?: FileType;
     fileSize?: bigint;
@@ -29,8 +30,9 @@ export class DatabaseService {
           description: data.description,
           cid: data.cid,
           metadataCid: data.metadataCid,
-          royaltyFee: data.royaltyFee,
-          category: data.category,
+          royaltyFeeInBasisPoints: data.royaltyFeeInBasisPoints,
+          price: data.price,
+          priceInWei: data.priceInWei,
           tags: data.tags || [],
           fileType: data.fileType,
           fileSize: data.fileSize,

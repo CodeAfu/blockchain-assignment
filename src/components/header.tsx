@@ -12,15 +12,11 @@ const navLinks = [
   },
   {
     label: "Upload",
-    href: "upload",
+    href: "/media/upload",
   },
   {
     label: "My Media",
-    href: "/mymedia",
-  },
-  {
-    label: "Sample",
-    href: "/sample",
+    href: "/media",
   },
   {
     label: "Test",

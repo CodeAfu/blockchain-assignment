@@ -33,9 +33,10 @@ export function AppkitContextProvider({ children }: { children: React.ReactNode 
 
       if (!result.data) {
         console.error("Wallet balance not found");
+        return;
       }
 
-      const balanceInEth = result.data ? Number(result.data.balance) / 1e18 : 0;
+      const balanceInEth = parseFloat(result.data.balance);
       setBalance(parseFloat(balanceInEth.toFixed(4)));
     };
 
