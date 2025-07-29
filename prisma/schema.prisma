@@ -28,7 +28,7 @@ model MediaNFT {
   description             String?   @db.Text
   royaltyFeeInBasisPoints BigInt
   price                   Float // Ethers
-  priceInWei              BigInt // On-chain use
+  priceInWei              String // On-chain use (Postgres only support int8, so String)
   tags                    String[]
   cid                     String    @db.VarChar(100)
   metadataCid             String    @db.VarChar(100)

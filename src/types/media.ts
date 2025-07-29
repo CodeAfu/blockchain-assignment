@@ -68,7 +68,7 @@ export interface CreateNFTDataReturnType {
   ownerAddress: Address;
   fileType: FileType | null;
   fileSize: bigint;
-  priceInWei: bigint;
+  priceInWei: string;
   royaltyFeeInBasisPoints: bigint;
   royaltyFee: number;
   title: string;
@@ -79,7 +79,7 @@ export interface CreateNFTDataReturnType {
 
 export interface NFTData extends Omit<MediaNFT, "priceInWei" | "royaltyFeeInBasisPoints"> {
   royaltyFee: number;
-  priceInWei?: bigint;
+  priceInWei?: string;
   royaltyFeeInBasisPoints?: bigint;
 }
 

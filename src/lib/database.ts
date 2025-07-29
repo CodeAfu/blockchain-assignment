@@ -14,7 +14,7 @@ export class DatabaseService {
     metadataCid: string;
     royaltyFeeInBasisPoints: bigint;
     price: number;
-    priceInWei: bigint;
+    priceInWei: string;
     tags: string[];
     fileType: FileType | null;
     fileSize: bigint | null;
@@ -41,7 +41,7 @@ export class DatabaseService {
       });
     } catch (error) {
       console.error("Error creating media NFT:", error);
-      throw new Error("Failed to add media NFT to database");
+      throw error;
     }
   }
 

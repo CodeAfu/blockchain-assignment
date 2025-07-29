@@ -13,7 +13,7 @@ import { toWei } from "@/utils/ethers-utils";
 
 type PatchedNFT = Omit<NFTData, "tokenId"> & {
   royaltyFeeInBasisPoints: bigint;
-  priceInWei: bigint;
+  priceInWei: string;
 };
 
 export function createNFTData(
@@ -27,7 +27,7 @@ export function createNFTData(
     ownerAddress: address,
     fileType: getFileType(file.type),
     fileSize: BigInt(file.size),
-    priceInWei: parseEther(nftData.price.toString()),
+    priceInWei: parseEther(nftData.price.toString()).toString(),
     royaltyFeeInBasisPoints: convertPercentToBasisPoints(nftData.royaltyFee),
   };
 }
@@ -65,7 +65,7 @@ export async function mintNFTWithMetadata(
         address,
         metadataURI,
         patchedNFTData.royaltyFeeInBasisPoints,
-        patchedNFTData.priceInWei,
+        BigInt(patchedNFTData.priceInWei),
         mintingFee
       )
     );
@@ -103,6 +103,22 @@ export async function mintNFTWithMetadata(
       metadataCid: metadataUploadResult.data.cid,
     };
 
+    devLog({
+      tokenId: nftDataWithCid.tokenId,
+      tokenIdType: typeof nftDataWithCid.tokenId,
+      priceInWei: nftDataWithCid.priceInWei,
+      priceInWeiType: typeof nftDataWithCid.priceInWei,
+    });
+
+    console.log(
+      "NFT Payload:",
+      JSON.stringify(
+        nftDataWithCid,
+        (_key, value) => (typeof value === "bigint" ? value.toString() : value),
+        2 // pretty print
+      )
+    );
+
     // Save to database
     return await saveToDatabase(nftDataWithCid);
   } catch (error) {
@@ -119,7 +135,7 @@ export function patchNFTData(nftDataDto: CreateNFTDataReturnType): PatchedNFT {
   }
 
   if (!nftDataDto.priceInWei) {
-    nftDataDto.priceInWei = toWei(nftDataDto.price);
+    nftDataDto.priceInWei = toWei(nftDataDto.price).toString();
   }
 
   return nftDataDto as PatchedNFT;
