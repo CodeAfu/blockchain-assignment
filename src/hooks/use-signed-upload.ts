@@ -9,19 +9,22 @@ import { uploadFile } from "@/lib/ipfs/upload";
 import { createNFTData, mintNFTWithMetadata } from "@/lib/nft";
 
 type UploadStatus =
-  | "unknown"
-  | "rejected"
-  | "failed"
-  | "upload-failed"
   | "no-wallet"
+  | "uploading"
+  | "upload-failed"
+  | "creating-nft"
+  | "minting"
+  | "mint-failed"
   | "success"
   | null;
 
 export function useSignedUpload() {
   const { isConnected, address } = useAccount();
-  const { signMessageAsync, isPending } = useSignMessage();
+  const { signMessageAsync } = useSignMessage();
   const [status, setStatus] = useState<UploadStatus>(null);
   const contract = useMediaContract();
+
+  const isPending = status === "uploading" || status === "creating-nft" || status === "minting";
 
   const { data: mintingFeeData } = contract.useMintingFee();
   const mintingFee = (mintingFeeData as bigint) || parseEther("0.001");
@@ -36,17 +39,20 @@ export function useSignedUpload() {
     }
 
     // 1. Upload file to IPFS
+    setStatus("uploading");
     const fileUploadResult = await uploadFile(file, address, signMessageAsync);
 
     if (fileUploadResult.error) {
-      setStatus("failed");
+      setStatus("upload-failed");
       return fileUploadResult;
     }
 
     // 2. Create NFT data
+    setStatus("creating-nft");
     const nftDataDto = createNFTData(nftData, address, file);
 
     // 3. Create and mint NFT with metadata
+    setStatus("minting");
     const nftResult = await mintNFTWithMetadata(
       nftDataDto,
       address,
@@ -55,6 +61,12 @@ export function useSignedUpload() {
       mintingFee
     );
 
+    if (nftResult.error) {
+      setStatus("mint-failed");
+      return nftResult;
+    }
+
+    setStatus("success");
     return nftResult;
   };
 
