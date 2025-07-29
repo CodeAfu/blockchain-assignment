@@ -236,7 +236,8 @@ export async function createMetadata(metadataArgs: {
     image: `ipfs://${cid}`,
     attributes: [
       { trait_type: "File Type", value: nftData.fileType || "Unknown" },
-      { trait_type: "Price", value: `${nftData.price}%` },
+      { trait_type: "File Size", value: Number(nftData.fileSize) || "Unknown" },
+      { trait_type: "Price", value: `${nftData.price} ETH` },
       { trait_type: "Royalty Fee", value: `${nftData.royaltyFee}%` },
     ],
   };

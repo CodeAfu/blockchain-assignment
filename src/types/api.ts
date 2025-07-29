@@ -7,6 +7,3 @@ export type MethodType = (typeof methodTypes)[number];
 export type APIResponse<T, E = Error> =
   | (Success<T> & { status: number })
   | (Failure<E> & { status: number });
-
-
-

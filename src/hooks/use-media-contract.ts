@@ -5,18 +5,21 @@ import {
   useWaitForTransactionReceipt,
   useWatchContractEvent,
 } from "wagmi";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { MEDIA_CONTRACT_ABI, MEDIA_CONTRACT_ADDRESS } from "@/lib/consts";
 import { Address, Hash, decodeEventLog, parseEther } from "viem";
 import { useState, useCallback, useEffect } from "react";
-import { 
-  MediaMintedEvent, 
-  MediaAccessedEvent, 
-  MediaListedEvent, 
+import {
+  MediaMintedEvent,
+  MediaAccessedEvent,
+  MediaListedEvent,
   MediaSoldEvent,
-  MediaDetails, 
+  MediaDetails,
   NFTMediaItem,
-  SaleInfo 
+  SaleInfo,
 } from "@/types/media";
+import { devLog } from "@/utils/logging";
+import { config } from "@/lib/web3-config";
 
 export function useMediaContract() {
   const [lastTxHash, setLastTxHash] = useState<Hash>();
@@ -25,6 +28,7 @@ export function useMediaContract() {
 
   const {
     writeContract,
+    writeContractAsync,
     data: writeData,
     isPending: isWritePending,
     error: writeError,
@@ -49,8 +53,11 @@ export function useMediaContract() {
 
   // Decode tokenId from logs
   useEffect(() => {
+    devLog("Decode useEffect triggered.");
     if (receipt?.logs && isConfirmed) {
+      devLog("Receipt Logs found and confirmed.");
       for (const log of receipt.logs) {
+        devLog("Receipt Log:", log);
         try {
           const parsed = decodeEventLog({
             abi: MEDIA_CONTRACT_ABI,
@@ -60,8 +67,10 @@ export function useMediaContract() {
           });
 
           if (parsed.args && parsed.eventName === "MediaMinted") {
+            devLog("MediaMinted Event Found.");
             const tokenId = (parsed.args as unknown as { tokenId: bigint }).tokenId;
             setMintedTokenId(Number(tokenId));
+            devLog("Minted Token ID:", tokenId);
             break;
           }
         } catch {
@@ -98,9 +107,9 @@ export function useMediaContract() {
   // WRITE FUNCTIONS
   const mintNFT = useCallback(
     (
-      recipient: Address, 
-      metadataURI: string, 
-      creatorRoyaltyBps: bigint, 
+      recipient: Address,
+      metadataURI: string,
+      creatorRoyaltyBps: bigint,
       initialSalePrice: bigint,
       mintingFee: bigint
     ) => {
@@ -114,6 +123,159 @@ export function useMediaContract() {
       });
     },
     [writeContract]
+  );
+
+  const mintNFTAsync = useCallback(
+    async (
+      recipient: Address,
+      metadataURI: string,
+      creatorRoyaltyBps: bigint,
+      initialSalePrice: bigint,
+      mintingFee: bigint
+    ): Promise<{ tokenId: number; txHash: Hash }> => {
+      setPendingTx("mintNFT");
+
+      try {
+        // Write the contract transaction
+        const txHash = await writeContractAsync({
+          address: MEDIA_CONTRACT_ADDRESS as Address,
+          abi: MEDIA_CONTRACT_ABI,
+          functionName: "mintNFT",
+          args: [recipient, metadataURI, creatorRoyaltyBps, initialSalePrice],
+          value: mintingFee,
+        });
+
+        console.log("Transaction hash:", txHash);
+        console.log("Contract address:", MEDIA_CONTRACT_ADDRESS);
+
+        // Wait for transaction to be confirmed
+        const receipt = await waitForTransactionReceipt(config, {
+          hash: txHash,
+          confirmations: 1, // Wait for at least 1 confirmation
+        });
+
+        console.log("Transaction receipt:", receipt);
+        console.log("Receipt status:", receipt.status);
+        console.log("Receipt logs count:", receipt.logs.length);
+
+        if (receipt.status !== "success") {
+          throw new Error("Transaction failed");
+        }
+
+        // Debug: Print all logs with their addresses
+        receipt.logs.forEach((log, index) => {
+          console.log(`Log ${index}:`, {
+            address: log.address,
+            topics: log.topics,
+            data: log.data,
+            isFromOurContract: log.address.toLowerCase() === MEDIA_CONTRACT_ADDRESS.toLowerCase(),
+          });
+        });
+
+        // Extract tokenId from logs - try multiple approaches
+        for (const log of receipt.logs) {
+          // Check if this log is from our contract
+          if (log.address.toLowerCase() !== MEDIA_CONTRACT_ADDRESS.toLowerCase()) {
+            console.log("Skipping log from different contract:", log.address);
+            continue;
+          }
+
+          try {
+            // Approach 1: Decode without specifying eventName
+            const parsed = decodeEventLog({
+              abi: MEDIA_CONTRACT_ABI,
+              topics: log.topics,
+              data: log.data,
+            });
+
+            console.log("Decoded log (approach 1):", parsed);
+
+            if (parsed.eventName === "MediaMinted") {
+              const args = parsed.args as unknown as { tokenId: bigint };
+              console.log("MediaMinted event args:", args);
+
+              // Try to extract tokenId - should be the first argument
+              let tokenId: number;
+
+              if (args && typeof args.tokenId !== "undefined") {
+                tokenId = Number(args.tokenId);
+              } else {
+                console.error("Could not find tokenId in MediaMinted args:", args);
+                continue;
+              }
+
+              console.log("Successfully extracted tokenId:", tokenId);
+              setMintedTokenId(tokenId);
+              setPendingTx(null);
+              return { tokenId, txHash };
+            }
+          } catch (decodeError) {
+            console.log("Approach 1 failed for log:", decodeError);
+          }
+
+          try {
+            // Approach 2: Try to decode specifically as MediaMinted event
+            const parsed = decodeEventLog({
+              abi: MEDIA_CONTRACT_ABI,
+              eventName: "MediaMinted",
+              topics: log.topics,
+              data: log.data,
+            });
+
+            console.log("Decoded log (approach 2):", parsed);
+
+            const args = parsed.args as unknown as { tokenId: bigint };
+            const tokenId = Number(args.tokenId);
+
+            console.log("Successfully extracted tokenId (approach 2):", tokenId);
+            setMintedTokenId(tokenId);
+            setPendingTx(null);
+            return { tokenId, txHash };
+          } catch (decodeError) {
+            console.log("Approach 2 failed for log:", decodeError);
+          }
+
+          try {
+            // Approach 3: Manual parsing of topics (tokenId should be in topics[1] since it's indexed)
+            if (log.topics.length >= 2) {
+              // MediaMinted event signature should be topics[0]
+              // tokenId (indexed) should be topics[1]
+              // creator (indexed) should be topics[2]
+
+              const tokenIdHex = log.topics[1];
+              if (tokenIdHex) {
+                const tokenId = parseInt(tokenIdHex, 16);
+                console.log("Manually extracted tokenId from topics:", tokenId);
+                setMintedTokenId(tokenId);
+                setPendingTx(null);
+                return { tokenId, txHash };
+              }
+            }
+          } catch (manualError) {
+            console.log("Manual parsing failed:", manualError);
+          }
+        }
+
+        // If we get here, we couldn't find the MediaMinted event
+        console.error("MediaMinted event not found in any logs");
+        console.error("Transaction was successful but no MediaMinted event detected");
+
+        // Let's try waiting a bit longer and checking again
+        console.log("Waiting 2 seconds and trying to get events via contract call...");
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // As a last resort, try to get the return value from the contract call
+        // Since your mintNFT function returns the tokenId
+        throw new Error(
+          "Failed to extract tokenId from transaction logs - no MediaMinted event found"
+        );
+      } catch (error) {
+        setPendingTx(null);
+        console.error("mintNFTAsync error:", error);
+        throw error;
+      }
+    },
+    [writeContractAsync]
   );
 
   const listForSale = useCallback(
@@ -423,6 +585,7 @@ export function useMediaContract() {
   const contract = {
     // Write functions
     mintNFT,
+    mintNFTAsync,
     listForSale,
     unlistFromSale,
     buyNFT,
@@ -489,10 +652,10 @@ export function useMarketplace() {
   // Fetch items currently for sale
   const fetchForSaleItems = useCallback(async (): Promise<NFTMediaItem[]> => {
     const forSaleItems: NFTMediaItem[] = [];
-    
+
     // In a production app, you'd want to implement this more efficiently
     // possibly by maintaining an index of for-sale items or using events
-    
+
     return forSaleItems;
   }, []);
 

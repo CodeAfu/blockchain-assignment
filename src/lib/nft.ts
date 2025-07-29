@@ -60,26 +60,45 @@ export async function mintNFTWithMetadata(
     const patchedNFTData = patchNFTData(nftDataDto);
 
     // Mint NFT on blockchain
-    contract.mintNFT(
-      address,
-      metadataURI,
-      patchedNFTData.royaltyFeeInBasisPoints,
-      patchedNFTData.priceInWei,
-      mintingFee
+    const mintResult = await tryCatch(
+      contract.mintNFTAsync(
+        address,
+        metadataURI,
+        patchedNFTData.royaltyFeeInBasisPoints,
+        patchedNFTData.priceInWei,
+        mintingFee
+      )
     );
-    devLog("Minted NFT");
 
-    if (!contract.mintedTokenId) {
-      return {
-        data: null,
-        error: new Error("Failed to get minted token ID"),
-      };
+    if (mintResult.error) {
+      return mintResult;
     }
 
+    const tokenId = mintResult.data.tokenId;
+
+    // contract.mintNFT(
+    //   address,
+    //   metadataURI,
+    //   patchedNFTData.royaltyFeeInBasisPoints,
+    //   patchedNFTData.priceInWei,
+    //   mintingFee
+    // );
+
+    // if (!contract.mintedTokenId) {
+    //   return {
+    //     data: null,
+    //     error: new Error("Failed to get minted token ID"),
+    //   };
+    // }
+
+    // const tokenId = contract.mintedTokenId;
+
+    devLog("Token Minted Successfully: ", tokenId);
+
     // Prepare data for database
-    const nftDataWithCid: PatchedNFT & { tokenId: number, cid: string; metadataCid: string } = {
+    const nftDataWithCid: PatchedNFT & { tokenId: number; cid: string; metadataCid: string } = {
       ...patchedNFTData,
-      tokenId: contract.mintedTokenId,
+      tokenId: tokenId,
       cid: fileCid,
       metadataCid: metadataUploadResult.data.cid,
     };

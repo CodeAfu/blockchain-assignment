@@ -130,8 +130,8 @@ npm run deploy
 
 4. Helper Functions
 
-`convertPercentToBasisPoints()` - Convert frontend % to contract basis points
-`convertBasisPointsToPercent()` - Convert basis points back to %
+    - `convertPercentToBasisPoints()` - Convert frontend % to contract basis points
+    - `convertBasisPointsToPercent()` - Convert basis points back to %
 
 ## Libraries Used
 

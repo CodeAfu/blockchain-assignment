@@ -9,7 +9,7 @@ import { tryCatch } from "@/utils/try-catch";
 
 export async function uploadFile(
   file: File,
-  address: Address,
+  address: string,
   signMessageAsync: (args: { message: string }) => Promise<string>
 ): Promise<Result<UploadResponse>> {
   const message = `Uploading file: ${file.name} (${file.size} bytes) at ${Date.now()}`;

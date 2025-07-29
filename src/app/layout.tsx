@@ -5,6 +5,8 @@ import { headers } from "next/headers";
 import Providers from "@/components/providers";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { config } from "@/lib/web3-config";
+import { devLog } from "@/utils/logging";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +21,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersObj = await headers();
-  const cookies = headersObj.get("cookies");
+  const cookies = await headers().then(h => h.get("cookies"));
+
+  devLog("Network config:", config);
+  devLog("Current chain ID:", await config.getClient().chain);
 
   return (
     <html lang="en">

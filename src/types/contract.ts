@@ -67,7 +67,17 @@ export interface MediaContract {
     initialSalePrice: bigint,
     mintingFee: bigint
   ) => void;
-  
+  mintNFTAsync: (
+    recipient: Address,
+    metadataURI: string,
+    creatorRoyaltyBps: bigint,
+    initialSalePrice: bigint,
+    mintingFee: bigint
+  ) => Promise<{
+    tokenId: number;
+    txHash: Hash;
+  }>;
+
   listForSale: (tokenId: bigint, price: bigint) => void;
   unlistFromSale: (tokenId: bigint) => void;
   buyNFT: (tokenId: bigint, paymentAmount: bigint) => void;
@@ -93,11 +103,11 @@ export interface MediaContract {
   formatMediaDetails: (
     rawData: readonly [bigint, Address, bigint, boolean] | undefined
   ) => MediaDetails | null;
-  
+
   formatSaleInfo: (
     rawData: readonly [boolean, bigint, Address, Address, bigint] | undefined
   ) => SaleInfo | null;
-  
+
   formatNFTMediaItem: (
     tokenId: bigint,
     tokenURI: string | undefined,

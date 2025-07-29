@@ -26,10 +26,7 @@ export function useSignedUpload() {
   const { data: mintingFeeData } = contract.useMintingFee();
   const mintingFee = (mintingFeeData as bigint) || parseEther("0.001");
 
-  const uploadWithSignature = async (
-    file: File,
-    nftData: NFTDto
-  ) => {
+  const uploadWithSignature = async (file: File, nftData: NFTDto) => {
     if (!isConnected || !address) {
       setStatus("no-wallet");
       return {
