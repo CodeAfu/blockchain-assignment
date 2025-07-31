@@ -1,4 +1,4 @@
-import { cookieStorage, createStorage } from "@wagmi/core";
+import { cookieStorage, createStorage } from "wagmi";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { AppKitNetwork, hardhat, sepolia } from "@reown/appkit/networks";
 
@@ -9,14 +9,14 @@ if (!projectId) {
   throw new Error("Project ID is not defined");
 }
 
-export const networks = [hardhat, sepolia] as [AppKitNetwork, ...AppKitNetwork[]];
+export const networks = [sepolia, hardhat] as [AppKitNetwork, ...AppKitNetwork[]];
 
 export const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
-  ssr: true,
-  projectId,
   networks,
 });
 

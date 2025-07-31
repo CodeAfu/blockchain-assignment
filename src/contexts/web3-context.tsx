@@ -3,8 +3,8 @@
 import { wagmiAdapter, projectId, config } from "@/lib/web3-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createAppKit } from "@reown/appkit/react";
-import React, { type ReactNode } from "react";
-import { cookieToInitialState, WagmiProvider, } from "wagmi";
+import React, { useEffect, type ReactNode } from "react";
+import { State, WagmiProvider } from "wagmi";
 import { networks } from "@/lib/web3-config";
 import { devLog } from "@/utils/logging";
 
@@ -38,14 +38,14 @@ createAppKit({
 
 export function WagmiContextProvider({
   children,
-  cookies,
+  initialState,
 }: {
   children: ReactNode;
-  cookies: string | null;
+  initialState: State | undefined;
 }) {
-  const initialState = cookieToInitialState(config, cookies);
-  devLog("Initial State:", initialState);
-
+  useEffect(() => {
+    devLog("Updated InitialState:", initialState);
+  }, [initialState]);
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

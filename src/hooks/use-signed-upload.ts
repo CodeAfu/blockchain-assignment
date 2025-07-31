@@ -8,20 +8,20 @@ import { parseEther } from "viem";
 import { uploadFile } from "@/lib/ipfs/upload";
 import { createNFTData, mintNFTWithMetadata } from "@/lib/nft";
 
-type UploadStatus =
-  | "no-wallet"
-  | "uploading"
-  | "upload-failed"
-  | "creating-nft"
-  | "minting"
-  | "mint-failed"
-  | "success"
-  | null;
+export enum UploadStatus {
+  NO_WALLET = "no-wallet",
+  UPLOADING = "uploading",
+  UPLOAD_FAILED = "upload-failed",
+  CREATING_NFT = "creating-nft",
+  MINTING = "minting",
+  MINT_FAILED = "mint-failed",
+  SUCCESS = "success",
+}
 
 export function useSignedUpload() {
   const { isConnected, address } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const [status, setStatus] = useState<UploadStatus>(null);
+  const [status, setStatus] = useState<UploadStatus | null>(null);
   const contract = useMediaContract();
 
   const isPending = status === "uploading" || status === "creating-nft" || status === "minting";
@@ -31,7 +31,7 @@ export function useSignedUpload() {
 
   const uploadWithSignature = async (file: File, nftData: NFTDto) => {
     if (!isConnected || !address) {
-      setStatus("no-wallet");
+      setStatus(UploadStatus.NO_WALLET);
       return {
         data: null,
         error: new Error("No wallet detected."),
@@ -39,20 +39,20 @@ export function useSignedUpload() {
     }
 
     // 1. Upload file to IPFS
-    setStatus("uploading");
+    setStatus(UploadStatus.UPLOADING);
     const fileUploadResult = await uploadFile(file, address, signMessageAsync);
 
     if (fileUploadResult.error) {
-      setStatus("upload-failed");
+      setStatus(UploadStatus.UPLOAD_FAILED);
       return fileUploadResult;
     }
 
     // 2. Create NFT data
-    setStatus("creating-nft");
+    setStatus(UploadStatus.CREATING_NFT);
     const nftDataDto = createNFTData(nftData, address, file);
 
     // 3. Create and mint NFT with metadata
-    setStatus("minting");
+    setStatus(UploadStatus.MINTING);
     const nftResult = await mintNFTWithMetadata(
       nftDataDto,
       address,
@@ -62,11 +62,11 @@ export function useSignedUpload() {
     );
 
     if (nftResult.error) {
-      setStatus("mint-failed");
+      setStatus(UploadStatus.MINT_FAILED);
       return nftResult;
     }
 
-    setStatus("success");
+    setStatus(UploadStatus.SUCCESS);
     return nftResult;
   };
 

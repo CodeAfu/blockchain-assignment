@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8 text-sm">
         {/* Branding */}
         <div>
-          <h3 className="text-white text-lg font-semibold mb-2">MediaRights</h3>
+        <h3 className="text-white text-lg font-semibold mb-2">MediaVault</h3>
           <p className="text-gray-400">Empowering creators with ownership and fair rewards.</p>
           <p className="mt-4 text-xs text-gray-500">
             © {new Date().getFullYear()} MediaRights. All rights reserved.

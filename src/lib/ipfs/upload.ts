@@ -1,5 +1,5 @@
 // lib/upload.ts - File upload utilities
-import { uploadFileWithSignature as uploadFileAction, storeMetadata } from "@/app/actions";
+import { uploadFileWithSignature as uploadFileAction, storeMetadata } from "@/actions/nft-actions";
 import { devLog } from "@/utils/logging";
 import { Address } from "viem";
 import { Result } from "@/types/result";

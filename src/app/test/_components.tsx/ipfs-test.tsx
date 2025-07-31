@@ -59,7 +59,7 @@ export default function IPFSTest() {
         title: formData.get("title") as string,
         description: formData.get("description") as string,
         royaltyFee: Number(formData.get("royaltyFee")) || 0,
-        price: BigInt((formData.get("price") as string) || BigInt(0)),
+        price: Number(formData.get("price") as string) || 0,
         tags: ((formData.get("tags") as string) || "").split(",").map(tag => tag.trim()),
       };
 

@@ -4,12 +4,10 @@ import TrustSection from "@/components/trust-section";
 
 export default function Home() {
   return (
-    <div>
-      <main>
-        <HeroSection />
-        <MarketplacePreview />
-        <TrustSection />
-      </main>
-    </div>
+    <main>
+      <HeroSection />
+      <MarketplacePreview />
+      <TrustSection />
+    </main>
   );
 }

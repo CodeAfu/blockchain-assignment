@@ -1,4 +1,4 @@
-import { createMetadata, saveToDatabase } from "@/app/actions";
+import { createMetadata, saveToDatabase } from "@/actions/nft-actions";
 import { CreateNFTDataReturnType, NFTData, NFTDto } from "@/types/media";
 import { devLog } from "@/utils/logging";
 import { getFileType } from "@/utils/file-utils";

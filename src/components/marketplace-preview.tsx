@@ -3,69 +3,61 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Container from "./container";
-import { getAccessLinkByCid, getFiles } from "@/app/actions";
 import { SkeletonCard } from "./skeleton-card";
-import { getFileBaseName } from "@/utils/file-utils";
+import { getAllMediaWithURI } from "@/actions/db-actions";
+import { $Enums, FileType } from "@prisma/client";
 
-interface NFTView {
+interface MediaItem {
   id: number;
-  name: string;
-  mediaType: "audio" | "video" | "image";
+  title: string;
+  description: string;
+  mediaType: $Enums.FileType | null;
   mediaUrl: string;
   creator: string;
 }
 
 export default function MarketplacePreview() {
-  const [nfts, setNfts] = useState<NFTView[]>([]);
+  const [nfts, setNfts] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFilesFromPinata = async () => {
-      const f = await getFiles();
-      if (!f.data) return;
+    const fetchFromDb = async () => {
+      setIsLoading(true);
+      const queryResult = await getAllMediaWithURI(3);
 
-      const fetchedNFTs: NFTView[] = await Promise.all(
-        f.data.files.map(async (file, index) => {
-          const getMediaType = (mime: string): NFTView["mediaType"] => {
-            if (mime.startsWith("image/")) return "image";
-            if (mime.startsWith("video/")) return "video";
-            if (mime.startsWith("audio/")) return "audio";
-            return "image"; // fallback
+      const fetchData = await Promise.all(
+        queryResult.map(async item => {
+          const returnItem: MediaItem = {
+            id: item.tokenId,
+            title: item.title,
+            description: item.description || "",
+            mediaType: item.fileType,
+            mediaUrl: item.tempAccessUri,
+            creator: item.creatorAddress,
           };
 
-          const accessLinkResult = await getAccessLinkByCid(file.cid);
-          const accessLink = accessLinkResult.data;
-
-          const name = file.name ? getFileBaseName(file.name) : "Untitled Media";
-
-          return {
-            id: index + 1,
-            name: name,
-            mediaType: getMediaType(file.mime_type),
-            mediaUrl: accessLink || "",
-            creator: file.keyvalues?.signer || "Unknown",
-          };
+          return returnItem;
         })
       );
 
-      setNfts(fetchedNFTs);
+      setNfts(fetchData.filter((item): item is MediaItem => item !== undefined));
       setIsLoading(false);
     };
 
-    fetchFilesFromPinata();
+    fetchFromDb();
   }, []);
 
-  const renderMedia = (nft: NFTView) => {
+  const renderMedia = (nft: MediaItem) => {
     switch (nft.mediaType) {
-      case "image":
+      case FileType.IMAGE:
         return (
           <div className="relative w-full h-48 rounded overflow-hidden">
-            <Image src={nft.mediaUrl} alt={nft.name} fill className="object-cover" />
+            <Image src={nft.mediaUrl} alt={nft.title} fill className="object-cover" />
           </div>
         );
-      case "video":
+      case FileType.VIDEO:
         return <video src={nft.mediaUrl} controls className="w-full h-48 rounded" />;
-      case "audio":
+      case FileType.AUDIO:
         return (
           <div className="flex flex-col items-center justify-center h-48 bg-gray-800 rounded">
             🎵
@@ -84,11 +76,12 @@ export default function MarketplacePreview() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {isLoading
             ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
-            : nfts.map(nft => (
+            : nfts &&
+              nfts.map(nft => (
                 <div key={nft.id} className="bg-white dark:bg-purple-950 rounded-xl shadow p-4">
                   {renderMedia(nft)}
                   <div className="mt-4">
-                    <h3 className="text-xl font-semibold">{nft.name}</h3>
+                    <h3 className="text-xl font-semibold">{nft.title}</h3>
                     <p className="text-sm text-gray-500">Creator: {nft.creator}</p>
                   </div>
                 </div>

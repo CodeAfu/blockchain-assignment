@@ -7,6 +7,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { config } from "@/lib/web3-config";
 import { devLog } from "@/utils/logging";
+import { cookieToInitialState } from "wagmi";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,15 +22,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookies = await headers().then(h => h.get("cookies"));
-
-  devLog("Network config:", config);
-  devLog("Current chain ID:", await config.getClient().chain);
-
+  const initialState = cookieToInitialState(config, (await headers()).get("cookie"));
+  devLog("Initial State: ", initialState);
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <Providers cookies={cookies}>
+        <Providers initialState={initialState}>
           <Header />
           {children}
           <Footer />

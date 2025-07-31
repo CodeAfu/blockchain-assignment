@@ -83,6 +83,10 @@ export interface NFTData extends Omit<MediaNFT, "priceInWei" | "royaltyFeeInBasi
   royaltyFeeInBasisPoints?: bigint;
 }
 
+export interface MediaNFTWithTempUri extends MediaNFT {
+  tempAccessUri: string;
+}
+
 // export interface NFTData {
 //   tokenId: number;
 //   creatorAddress: string;

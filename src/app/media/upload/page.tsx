@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/shadcn-ui/button";
 import { Card, CardContent } from "@/components/shadcn-ui/card";
@@ -14,9 +14,10 @@ import {
 } from "@/lib/reducers/upload-form-reducer";
 import { useSignedUpload } from "@/hooks/use-signed-upload";
 import { devLog } from "@/utils/logging";
+import DisplayUploadStatus from "./_components/upload-status";
 
 export default function Upload() {
-  const { uploadWithSignature, isConnected, isPending } = useSignedUpload();
+  const { uploadWithSignature, isConnected, isPending, status } = useSignedUpload();
   const [{ title, description, royaltyFee, price, tags }, dispatch] = useReducer(
     uploadFormReducer,
     initialUploadFormState
@@ -28,6 +29,11 @@ export default function Upload() {
 
   const [error, setError] = useState<string | null>(null);
   const [royaltyError, setRoyaltyError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!status) return;
+    setError(null);
+  }, [status]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -119,7 +125,6 @@ export default function Upload() {
         .filter(tag => tag !== ""),
     };
 
-
     devLog("Uploading file with data:", {
       file: selectedFile,
       title,
@@ -134,7 +139,7 @@ export default function Upload() {
 
     const uploadResult = await uploadWithSignature(selectedFile, nftDto);
 
-    devLog(uploadResult)
+    devLog(uploadResult);
 
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -272,6 +277,8 @@ export default function Upload() {
                 <p className="text-center">{error}</p>
               </div>
             )}
+
+            {status && <DisplayUploadStatus status={status} />}
 
             <Button onClick={handleUpload} disabled={isPending} className="w-full mt-2">
               Mint Your NFT
