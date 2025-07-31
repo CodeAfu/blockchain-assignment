@@ -14,6 +14,7 @@ import { toWei } from "@/utils/ethers-utils";
 type PatchedNFT = Omit<NFTData, "tokenId"> & {
   royaltyFeeInBasisPoints: bigint;
   priceInWei: string;
+  rawFileType: string;
 };
 
 export function createNFTData(
@@ -26,6 +27,7 @@ export function createNFTData(
     creatorAddress: address,
     ownerAddress: address,
     fileType: getFileType(file.type),
+    rawFileType: file.type,
     fileSize: BigInt(file.size),
     priceInWei: parseEther(nftData.price.toString()).toString(),
     royaltyFeeInBasisPoints: convertPercentToBasisPoints(nftData.royaltyFee),
@@ -41,7 +43,18 @@ export async function mintNFTWithMetadata(
 ): Promise<Result<MediaNFT>> {
   try {
     // Create metadata
-    const metadataResult = await tryCatch(createMetadata({ cid: fileCid, nftData: nftDataDto }));
+    const metadataResult = await tryCatch(
+      createMetadata({
+        cid: fileCid,
+        title: nftDataDto.title,
+        description: nftDataDto.description || "",
+        rawFileType: nftDataDto.rawFileType,
+        fileSize: nftDataDto.fileSize,
+        price: nftDataDto.price,
+        royaltyFee: nftDataDto.royaltyFee,
+      })
+    );
+
     if (metadataResult.error) {
       return metadataResult;
     }

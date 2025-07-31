@@ -9,7 +9,10 @@ if (!projectId) {
   throw new Error("Project ID is not defined");
 }
 
-export const networks = [sepolia, hardhat] as [AppKitNetwork, ...AppKitNetwork[]];
+export const networks =
+  process.env.NODE_ENV === "development"
+    ? ([sepolia, hardhat] as [AppKitNetwork, ...AppKitNetwork[]])
+    : ([sepolia] as [AppKitNetwork, ...AppKitNetwork[]]);
 
 export const wagmiAdapter = new WagmiAdapter({
   projectId,

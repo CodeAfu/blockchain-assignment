@@ -67,6 +67,7 @@ export interface CreateNFTDataReturnType {
   creatorAddress: Address;
   ownerAddress: Address;
   fileType: FileType | null;
+  rawFileType: string;
   fileSize: bigint;
   priceInWei: string;
   royaltyFeeInBasisPoints: bigint;
@@ -106,10 +107,23 @@ export interface NFTMetadata {
   name: string;
   description: string;
   image: string;
+  animation_url?: string;
+
   attributes: Array<{
     trait_type: string;
     value: string | number;
   }>;
+
+  media?: {
+    type: string;
+    size_bytes: number;
+  };
+
+  pricing: {
+    price_eth: number;
+    royalty_percent: number;
+  };
+
   properties?: {
     // Optional
     files: Array<{

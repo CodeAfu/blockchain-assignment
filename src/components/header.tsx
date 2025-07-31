@@ -1,38 +1,18 @@
 import React from "react";
-// import { Cuboid } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./shadcn-ui/button";
 import Wallet from "./wallet";
 import { AppkitContextProvider } from "@/contexts/appkit-context";
+import NavLinks from "./nav-links";
 
-const navLinks = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Upload",
-    href: "/media/upload",
-  },
-  {
-    label: "My Media",
-    href: "/media",
-  },
-  {
-    label: "Test",
-    href: "/test",
-  },
-];
 
 export default function Header() {
   return (
-    <nav className="flex items-center justify-center p-4 bg-slate-500/10 h-20">
-      <div className="max-w-7xl w-full flex items-center justify-between">
+    <nav className="flex items-center justify-center px-4 bg-slate-500/10 h-20">
+      <div className="max-w-7xl w-full h-full flex items-center justify-between">
         {/* Left */}
-        <div className="flex gap-8 items-center">
+        <div className="flex h-full gap-8 items-center">
           <Link href="/" className="">
             <div className="flex items-center space-x-4">
-              {/* <Cuboid className="h-12 w-12" /> */}
               <h1 className="text-2xl font-semibold tracking-wider">
                 <span className="relative">
                   <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary to-blue-950">
@@ -46,13 +26,7 @@ export default function Header() {
           </Link>
 
           {/* Navigation */}
-          <div className="space-x-4">
-            {navLinks.map((item, index) => (
-              <Button key={index} variant="link" className="p-0 text-foreground text-md">
-                <Link href={item.href}>{item.label}</Link>
-              </Button>
-            ))}
-          </div>
+          <NavLinks />
         </div>
 
         {/* Right */}

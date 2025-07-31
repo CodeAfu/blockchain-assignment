@@ -10,7 +10,7 @@ import {
   PinataSDK,
   UploadResponse,
 } from "pinata";
-import { CreateNFTDataReturnType, NFTData, NFTMetadata } from "@/types/media";
+import { NFTMetadata } from "@/types/media";
 import { tryCatch } from "@/utils/try-catch";
 import { MediaNFT } from "@prisma/client";
 
@@ -227,18 +227,45 @@ export async function storeMetadata(file: File, filename: string): Promise<Resul
 
 export async function createMetadata(metadataArgs: {
   cid: string;
-  nftData: Omit<NFTData, "tokenId"> | NFTData | CreateNFTDataReturnType;
+  title: string;
+  description: string;
+  rawFileType: string;
+  fileSize: bigint;
+  price: number;
+  royaltyFee: number;
 }): Promise<NFTMetadata> {
-  const { cid, nftData } = metadataArgs;
+  const { cid, title, description, rawFileType, fileSize, price, royaltyFee } = metadataArgs;
+
+  const safeFileSize = Number(fileSize) || 0;
+  const safePrice = Number(price) || 0;
+  const safeRoyalty = Number(royaltyFee) || 0;
+
   return {
-    name: nftData.title,
-    description: nftData.description ?? "",
+    name: title,
+    description: description || "",
     image: `ipfs://${cid}`,
+
+    // Add animation_url for audio/video content
+    animation_url:
+      rawFileType.startsWith("audio") || rawFileType.startsWith("video")
+        ? `ipfs://${cid}`
+        : undefined,
+
+    media: {
+      type: rawFileType,
+      size_bytes: safeFileSize,
+    },
+
+    pricing: {
+      price_eth: safePrice,
+      royalty_percent: safeRoyalty,
+    },
+
     attributes: [
-      { trait_type: "File Type", value: nftData.fileType || "Unknown" },
-      { trait_type: "File Size", value: Number(nftData.fileSize) || "Unknown" },
-      { trait_type: "Price", value: `${nftData.price} ETH` },
-      { trait_type: "Royalty Fee", value: `${nftData.royaltyFee}%` },
+      { trait_type: "File Type", value: rawFileType },
+      { trait_type: "File Size", value: `${Math.round(safeFileSize / 1024)} KB` },
+      { trait_type: "Price (ETH)", value: safePrice },
+      { trait_type: "Royalty (%)", value: safeRoyalty },
     ],
   };
 }
