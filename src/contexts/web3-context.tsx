@@ -3,10 +3,9 @@
 import { wagmiAdapter, projectId, config } from "@/lib/web3-config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createAppKit } from "@reown/appkit/react";
-import React, { useEffect, type ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { State, WagmiProvider } from "wagmi";
 import { networks } from "@/lib/web3-config";
-import { devLog } from "@/utils/logging";
 
 // Set up queryClient
 const queryClient = new QueryClient();
@@ -31,8 +30,15 @@ createAppKit({
   networks: networks,
   defaultNetwork: networks[0],
   metadata: metadata,
+  enableWalletConnect: true,
+  enableInjected: true,
+  enableCoinbase: false,
+  allowUnsupportedChain: false,
+  themeMode: "light",
   features: {
-    analytics: true,
+    analytics: false,
+    email: false,
+    socials: [],
   },
 });
 
@@ -43,9 +49,6 @@ export function WagmiContextProvider({
   children: ReactNode;
   initialState: State | undefined;
 }) {
-  useEffect(() => {
-    devLog("Updated InitialState:", initialState);
-  }, [initialState]);
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
