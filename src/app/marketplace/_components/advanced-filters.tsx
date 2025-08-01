@@ -4,13 +4,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
 } from "@/components/shadcn-ui/dropdown-menu";
 import React, { startTransition } from "react";
 import {
   FilterSearchParams,
-  MediaTypeFilter,
   mediaTypeLabels,
-  mediaTypeOptions,
   SortDateFilterOptions,
   sortDateLabels,
   sortDateOptions,
@@ -20,7 +19,6 @@ import {
 } from "../types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/utils/shadcn-utils";
-
 
 export default function AdvancedFilters({
   className,
@@ -54,21 +52,62 @@ export default function AdvancedFilters({
 
   const sortDateParam = (searchParams.get("sortDate") ?? "newest") as SortDateFilterOptions;
   const sortPriceParam = (searchParams.get("sortPrice") ?? "none") as SortPriceFilterOptions;
-  const mediaTypeParam = (searchParams.get("mediaType") ?? "all") as MediaTypeFilter;
+  const mediaTypeOptions = ["audio", "image", "video"] as const;
+  type MediaTypeFilter = (typeof mediaTypeOptions)[number];
+
+  const mediaTypeParamRaw = searchParams.get("mediaType");
+  const mediaTypeSelected: MediaTypeFilter[] = mediaTypeParamRaw
+    ? (mediaTypeParamRaw.split(",").filter(Boolean) as MediaTypeFilter[])
+    : [];
+
+  const updateMediaType = (type: MediaTypeFilter) => {
+    let updated: MediaTypeFilter[];
+
+    if (mediaTypeSelected.includes(type)) {
+      updated = mediaTypeSelected.filter(t => t !== type);
+    } else {
+      updated = [...mediaTypeSelected, type];
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (updated.length === 0 || updated.length === mediaTypeOptions.length) {
+      params.delete("mediaType");
+    } else {
+      params.set("mediaType", updated.join(","));
+    }
+
+    startTransition(() => {
+      router.push(`?${params.toString()}`);
+    });
+  };
+
+  const displayText =
+    mediaTypeSelected.length === 0 || mediaTypeSelected.length === mediaTypeOptions.length
+      ? "All Media"
+      : mediaTypeSelected
+          .slice(0, 2)
+          .map(t => mediaTypeLabels[t])
+          .join(", ") + (mediaTypeSelected.length > 2 ? "..." : "");
 
   return (
     <div className={cn("flex gap-2", className)} {...props}>
+      {/* Media Type Filter */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="text-xs px-2 py-1">
-            {mediaTypeLabels[mediaTypeParam]}
+            {displayText}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {mediaTypeOptions.map(type => (
-            <DropdownMenuItem key={type} onSelect={() => updateParam("mediaType", type)}>
+            <DropdownMenuCheckboxItem
+              key={type}
+              checked={mediaTypeSelected.length === 0 || mediaTypeSelected.includes(type)}
+              onCheckedChange={() => updateMediaType(type)}
+              className="capitalize"
+            >
               {mediaTypeLabels[type]}
-            </DropdownMenuItem>
+            </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>

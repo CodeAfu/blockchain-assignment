@@ -1,4 +1,4 @@
-export const mediaTypeOptions = ["image", "audio", "video", "all"] as const;
+export const mediaTypeOptions = ["audio", "image", "video"] as const;
 export type MediaTypeFilter = (typeof mediaTypeOptions)[number];
 
 export const sortPriceOptions = ["asc", "desc", "none"] as const;
@@ -8,7 +8,7 @@ export const sortDateOptions = ["newest", "oldest"] as const;
 export type SortDateFilterOptions = (typeof sortDateOptions)[number];
 
 export interface FilterSearchParams {
-  mediaType?: MediaTypeFilter;
+  mediaType?: string;
   sortPrice?: SortPriceFilterOptions;
   sortDate?: SortDateFilterOptions;
   minPrice?: string;
@@ -17,9 +17,8 @@ export interface FilterSearchParams {
 }
 
 export const mediaTypeLabels: Record<MediaTypeFilter, string> = {
-  all: "All Media",
   image: "Images",
-  audio: "Audio Files",
+  audio: "Audio",
   video: "Videos",
 };
 
@@ -33,4 +32,3 @@ export const sortDateLabels: Record<SortDateFilterOptions, string> = {
   newest: "Newest",
   oldest: "Oldest",
 };
-

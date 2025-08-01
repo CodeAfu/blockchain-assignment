@@ -4,10 +4,10 @@ import { Button } from "@/components/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import React, { startTransition } from "react";
 import {
@@ -55,9 +55,35 @@ export default function AdvancedFiltersMobile({
     });
   };
 
+  // --- Media type logic for checkboxes ---
+  const mediaTypeParamRaw = searchParams.get("mediaType");
+  const mediaTypeSelected: MediaTypeFilter[] = mediaTypeParamRaw
+    ? (mediaTypeParamRaw.split(",").filter(Boolean) as MediaTypeFilter[])
+    : [];
+
+  const updateMediaType = (type: MediaTypeFilter) => {
+    let updated: MediaTypeFilter[];
+
+    if (mediaTypeSelected.includes(type)) {
+      updated = mediaTypeSelected.filter(t => t !== type);
+    } else {
+      updated = [...mediaTypeSelected, type];
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (updated.length === 0 || updated.length === mediaTypeOptions.length) {
+      params.delete("mediaType");
+    } else {
+      params.set("mediaType", updated.join(","));
+    }
+
+    startTransition(() => {
+      router.push(`?${params.toString()}`);
+    });
+  };
+
   const sortDateParam = (searchParams.get("sortDate") ?? "newest") as SortDateFilterOptions;
   const sortPriceParam = (searchParams.get("sortPrice") ?? "none") as SortPriceFilterOptions;
-  const mediaTypeParam = (searchParams.get("mediaType") ?? "all") as MediaTypeFilter;
 
   return (
     <div className={cn("md:hidden", className)} {...props}>
@@ -67,42 +93,46 @@ export default function AdvancedFiltersMobile({
             Filters
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[200px]">
+        <DropdownMenuContent className="w-[220px]">
+          {/* Media Type */}
           <DropdownMenuLabel>MEDIA TYPE</DropdownMenuLabel>
           {mediaTypeOptions.map(type => (
-            <DropdownMenuItem
+            <DropdownMenuCheckboxItem
               key={type}
-              onSelect={() => updateParam("mediaType", type)}
-              className={type === mediaTypeParam ? "font-semibold" : ""}
+              checked={mediaTypeSelected.length === 0 || mediaTypeSelected.includes(type)}
+              onCheckedChange={() => updateMediaType(type)}
+              className="capitalize"
             >
               {mediaTypeLabels[type]}
-            </DropdownMenuItem>
+            </DropdownMenuCheckboxItem>
           ))}
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuLabel>SORT PRICE</DropdownMenuLabel>
+          {/* Sort Price */}
+          <DropdownMenuLabel>PRICE</DropdownMenuLabel>
           {sortPriceOptions.map(option => (
-            <DropdownMenuItem
+            <DropdownMenuCheckboxItem
               key={option}
-              onSelect={() => updateParam("sortPrice", option)}
-              className={option === sortPriceParam ? "font-semibold" : ""}
+              checked={sortPriceParam === option}
+              onCheckedChange={() => updateParam("sortPrice", option)}
             >
               {sortPriceLabels[option]}
-            </DropdownMenuItem>
+            </DropdownMenuCheckboxItem>
           ))}
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuLabel>SORT DATE</DropdownMenuLabel>
+          {/* Sort Date */}
+          <DropdownMenuLabel>DATE</DropdownMenuLabel>
           {sortDateOptions.map(option => (
-            <DropdownMenuItem
+            <DropdownMenuCheckboxItem
               key={option}
-              onSelect={() => updateParam("sortDate", option)}
-              className={option === sortDateParam ? "font-semibold" : ""}
+              checked={sortDateParam === option}
+              onCheckedChange={() => updateParam("sortDate", option)}
             >
               {sortDateLabels[option]}
-            </DropdownMenuItem>
+            </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
