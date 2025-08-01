@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Footer from "@/components/footer";
 import { Card, CardContent } from "@/components/shadcn-ui/card";
 import Container from "@/components/container";
+import NextImage from "@/components/next-image";
 
 const images: { url: string }[] = [{ url: "/assets/insight.png" }];
 const videos: { url: string }[] = [];
@@ -18,11 +18,10 @@ const renderImages = () =>
           key={index}
           className="border flex justify-center items-center relative aspect-square rounded bg-white shadow"
         >
-          <Image
+          <NextImage
             src={img.url}
             alt={`Image ${index + 1}`}
             className="object-contain rounded p-4"
-            fill
           />
         </div>
       ))}

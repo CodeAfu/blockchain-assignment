@@ -12,7 +12,14 @@ const nextConfig: NextConfig = {
   },
   images: {
     // https://nextjs.org/docs/app/api-reference/components/image#remotepatterns
-    domains: ["tan-imperial-gecko-849.mypinata.cloud"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "tan-imperial-gecko-849.mypinata.cloud",
+        port: "",
+        pathname: "**",
+      },
+    ],
   },
 };
 

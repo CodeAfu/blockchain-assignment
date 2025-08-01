@@ -8,6 +8,7 @@ import Footer from "@/components/footer";
 import { config } from "@/lib/web3-config";
 import { devLog } from "@/utils/logging";
 import { cookieToInitialState } from "wagmi";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,13 @@ export default async function RootLayout({
           <Header />
           {children}
           <Footer />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              className: "text-sm shadow-md rounded-lg",
+              duration: 5000,
+            }}
+          />
         </Providers>
       </body>
     </html>

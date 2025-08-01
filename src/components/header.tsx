@@ -8,7 +8,7 @@ import NavLinks from "./nav-links";
 export default function Header() {
   return (
     <nav className="flex items-center justify-center px-4 bg-slate-500/10 h-20">
-      <div className="max-w-7xl w-full h-full flex items-center justify-between">
+      <div className="w-full h-full flex items-center justify-between">
         {/* Left */}
         <div className="flex h-full gap-8 items-center">
           <Link href="/" className="">
@@ -25,7 +25,6 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Navigation */}
           <NavLinks />
         </div>
 

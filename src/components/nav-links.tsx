@@ -10,7 +10,7 @@ const navLinks = [
     label: "Home",
     href: "/",
   },
-{
+  {
     label: "Marketplace",
     href: "/marketplace",
   },
@@ -22,10 +22,10 @@ const navLinks = [
     label: "Upload",
     href: "/media/upload",
   },
-  {
-    label: "Test",
-    href: "/test",
-  },
+  // {
+  //   label: "Test",
+  //   href: "/test",
+  // },
 ];
 
 export default function NavLinks() {
@@ -58,7 +58,7 @@ export default function NavLinks() {
           href={item.href}
           key={index}
           className={cn(
-            "px-4 h-full text-md relative transition-colors duration-200 flex items-center justify-center",
+            "flex px-4 h-full text-md transition-colors duration-200 items-center justify-center",
             isActiveLink(item.href)
               ? "text-primary font-semibold border-b border-b-primary rounded-none"
               : "text-foreground hover:bg-primary/5"

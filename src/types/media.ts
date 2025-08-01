@@ -71,6 +71,7 @@ export interface CreateNFTDataReturnType {
   fileSize: bigint;
   priceInWei: string;
   royaltyFeeInBasisPoints: bigint;
+  isForSale: boolean;
   royaltyFee: number;
   title: string;
   description: string | null;

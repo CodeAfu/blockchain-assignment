@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import Image from "next/image";
 import dynamic from "next/dynamic";
-import Container from "./container";
 import { SkeletonCard } from "./skeleton-card";
 import { getAllMediaWithURI } from "@/actions/db-actions";
 import { $Enums, FileType } from "@prisma/client";
-import { shimmerBlur } from "@/utils/blur";
+import NextImage from "./next-image";
 
 // Lazy load heavy components
 const LazyVideo = dynamic(
@@ -45,17 +43,7 @@ export default function MarketplacePreview() {
       case FileType.IMAGE:
         return (
           <div className="relative w-full h-48 rounded overflow-hidden">
-            <Image
-              src={nft.mediaUrl}
-              alt={nft.title}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority={false}
-              loading="lazy"
-              placeholder="blur"
-              blurDataURL={shimmerBlur()}
-            />
+            <NextImage src={nft.mediaUrl} alt={nft.title} />
           </div>
         );
       case FileType.VIDEO:
@@ -131,12 +119,23 @@ export default function MarketplacePreview() {
 
   return (
     <section className="py-16 px-6 bg-background/10">
-      <Container>
-        <h2 className="text-3xl font-bold text-center mb-10">Featured Media</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {isLoading ? Array.from({ length: 3 }, (_, i) => <SkeletonCard key={i} />) : nftGrid}
+      <h2 className="text-3xl font-bold text-center mb-10">Featured Media</h2>
+      {isLoading ? (
+        <div className="flex justify-center items-center w-full min-h-[300px] gap-8">
+          <div className="block sm:hidden">
+            <SkeletonCard />
+          </div>
+
+          <div className="hidden sm:flex gap-8">
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
         </div>
-      </Container>
+      ) : (
+        <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+          {nftGrid}
+        </div>
+      )}
     </section>
   );
 }

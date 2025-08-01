@@ -4,11 +4,18 @@ export type UploadFormState = {
   royaltyFee: string;
   price: string;
   tags: string;
+  listForSale: boolean;
 };
 
 export type UploadFormAction =
-  | { type: "SET_FIELD"; field: keyof UploadFormState; value: string }
-  | { type: "RESET" };
+  | { type: "RESET" }
+  | {
+      [K in keyof UploadFormState]: {
+        type: "SET_FIELD";
+        field: K;
+        value: UploadFormState[K];
+      };
+    }[keyof UploadFormState];
 
 export const initialUploadFormState: UploadFormState = {
   title: "",
@@ -16,6 +23,7 @@ export const initialUploadFormState: UploadFormState = {
   royaltyFee: "",
   price: "",
   tags: "",
+  listForSale: false,
 };
 
 export function uploadFormReducer(

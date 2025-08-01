@@ -31,6 +31,7 @@ export function createNFTData(
     fileSize: BigInt(file.size),
     priceInWei: parseEther(nftData.price.toString()).toString(),
     royaltyFeeInBasisPoints: convertPercentToBasisPoints(nftData.royaltyFee),
+    isForSale: false
   };
 }
 
@@ -52,6 +53,7 @@ export async function mintNFTWithMetadata(
         fileSize: nftDataDto.fileSize,
         price: nftDataDto.price,
         royaltyFee: nftDataDto.royaltyFee,
+        isForSale: nftDataDto.isForSale
       })
     );
 

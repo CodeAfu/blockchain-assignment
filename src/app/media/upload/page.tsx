@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useReducer, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/shadcn-ui/button";
 import { Card, CardContent } from "@/components/shadcn-ui/card";
 import { Input } from "@/components/shadcn-ui/input";
@@ -11,14 +10,25 @@ import {
   uploadFormReducer,
   initialUploadFormState,
   UploadFormState,
+  UploadFormAction,
 } from "@/lib/reducers/upload-form-reducer";
 import { useSignedUpload } from "@/hooks/use-signed-upload";
 import { devLog } from "@/utils/logging";
 import DisplayUploadStatus from "./_components/upload-status";
+import { Checkbox } from "@/components/shadcn-ui/checkbox";
+import { toast } from "sonner";
+import NextImage from "@/components/next-image";
+import { CircleAlert } from "lucide-react";
+
+type BooleanKeys<T> = {
+  [K in keyof T]: T[K] extends boolean ? K : never;
+}[keyof T];
+
+type BooleanFields = BooleanKeys<UploadFormState>;
 
 export default function Upload() {
   const { uploadWithSignature, isConnected, isPending, status } = useSignedUpload();
-  const [{ title, description, royaltyFee, price, tags }, dispatch] = useReducer(
+  const [{ title, description, royaltyFee, price, tags, listForSale }, dispatch] = useReducer(
     uploadFormReducer,
     initialUploadFormState
   );
@@ -34,6 +44,17 @@ export default function Upload() {
     if (!status) return;
     setError(null);
   }, [status]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Error", {
+        description: error,
+        className: "border border-red-500 bg-red-50 text-red-600",
+        icon: <CircleAlert className="stroke-red-500" />,
+        duration: 5000,
+      });
+    }
+  }, [error]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,9 +77,16 @@ export default function Upload() {
   };
 
   const handleChange =
-    (field: keyof UploadFormState) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      dispatch({ type: "SET_FIELD", field, value: e.target.value });
+    <K extends keyof UploadFormState>(field: K) =>
+    (
+      e: K extends "listForSale"
+        ? React.ChangeEvent<HTMLInputElement>
+        : React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      const value =
+        field === "listForSale" ? (e.target as HTMLInputElement).checked : e.target.value;
+
+      dispatch({ type: "SET_FIELD", field, value } as UploadFormAction);
       setError(null);
     };
 
@@ -75,6 +103,13 @@ export default function Upload() {
       setRoyaltyError(null);
     }
   };
+
+  const handleCheckboxChange =
+    <K extends BooleanFields>(field: K) =>
+    (checked: UploadFormState[K]) => {
+      dispatch({ type: "SET_FIELD", field, value: checked });
+      setError(null);
+    };
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === "," || e.key === " ") {
@@ -186,12 +221,7 @@ export default function Upload() {
             {previewUrl && (
               <div className="shadow relative aspect-video rounded-lg p-4">
                 {selectedFile?.type.startsWith("image/") ? (
-                  <Image
-                    src={previewUrl}
-                    alt="Preview"
-                    fill
-                    className="object-contain rounded-lg"
-                  />
+                  <NextImage src={previewUrl} alt="Preview" />
                 ) : selectedFile?.type.startsWith("video/") ? (
                   <video src={previewUrl} controls className="w-full rounded-lg shadow" />
                 ) : selectedFile?.type.startsWith("audio/") ? (
@@ -271,12 +301,22 @@ export default function Upload() {
               </div>
             </div>
 
-            {error && (
+            <div className="flex items-center gap-2 mt-2">
+              <Label htmlFor="listForSale">List Media for Sale: </Label>
+              <Checkbox
+                name="listForSale"
+                checked={listForSale}
+                onCheckedChange={handleCheckboxChange("listForSale")}
+                className="shadow-md border border-gray-300 hover:bg-gray-100 hover:ring-2 hover:ring-gray-500"
+              />
+            </div>
+
+            {/* {error && (
               <div className="text-red-500 w-fit self-center border border-red-500 bg-red-50 p-2 rounded-lg text-sm">
                 <p className="text-center font-bold">Error</p>
                 <p className="text-center">{error}</p>
               </div>
-            )}
+            )} */}
 
             {status && <DisplayUploadStatus status={status} />}
 

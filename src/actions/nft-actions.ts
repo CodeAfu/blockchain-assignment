@@ -233,8 +233,10 @@ export async function createMetadata(metadataArgs: {
   fileSize: bigint;
   price: number;
   royaltyFee: number;
+  isForSale: boolean;
 }): Promise<NFTMetadata> {
-  const { cid, title, description, rawFileType, fileSize, price, royaltyFee } = metadataArgs;
+  const { cid, title, description, rawFileType, fileSize, price, royaltyFee, isForSale } =
+    metadataArgs;
 
   const safeFileSize = Number(fileSize) || 0;
   const safePrice = Number(price) || 0;
@@ -266,6 +268,7 @@ export async function createMetadata(metadataArgs: {
       { trait_type: "File Size", value: `${Math.round(safeFileSize / 1024)} KB` },
       { trait_type: "Price (ETH)", value: safePrice },
       { trait_type: "Royalty (%)", value: safeRoyalty },
+      { trait_type: "Is For Sale", value: isForSale ? "true" : "false" },
     ],
   };
 }
