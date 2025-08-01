@@ -1,20 +1,16 @@
 import React from "react";
 import FilterPanel from "./_components/filter-panel";
 import MarketplaceGrid from "./_components/marketplace-grid";
-import { FilterSearchParams } from "./types";
 import { devLog } from "@/utils/logging";
+import { FilterSearchParams } from "./types";
 
 interface MarketplacePageProps {
-  searchParams?: FilterSearchParams;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default function MarketplacePage({ searchParams }: MarketplacePageProps) {
-  const mediaType = searchParams?.mediaType ?? "all";
-  const sortPrice = searchParams?.sortPrice ?? "none";
-  const sortDate = searchParams?.sortDate ?? "newest";
-  const minPrice = searchParams?.minPrice ?? "0";
-  const maxPrice = searchParams?.maxPrice ?? "10000";
-  const search = searchParams?.search ?? "";
+export default async function MarketplacePage({ searchParams }: MarketplacePageProps) {
+  const { mediaType, sortPrice, sortDate, minPrice, maxPrice, search } =
+    (await searchParams) as FilterSearchParams;
 
   devLog({
     mediaType,
