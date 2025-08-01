@@ -1,4 +1,3 @@
-
 import { useSearchParams, useRouter } from "next/navigation";
 
 export function useFilterParams() {

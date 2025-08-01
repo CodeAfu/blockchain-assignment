@@ -5,30 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/utils/shadcn-utils";
 
-const navLinks = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Marketplace",
-    href: "/marketplace",
-  },
-  {
-    label: "Media",
-    href: "/media",
-  },
-  {
-    label: "Upload",
-    href: "/media/upload",
-  },
-  // {
-  //   label: "Test",
-  //   href: "/test",
-  // },
-];
+interface NavItem {
+  label: string;
+  href: string;
+}
 
-export default function NavLinks() {
+interface NavLinksProps extends React.HTMLAttributes<HTMLDivElement> {
+  navList: NavItem[];
+}
+
+export default function NavLinks({ navList, className, ...props }: NavLinksProps) {
   const pathname = usePathname();
 
   const isActiveLink = (href: string) => {
@@ -37,7 +23,7 @@ export default function NavLinks() {
     }
 
     // Sort navLinks by length (longest first) to prioritize more specific routes
-    const sortedLinks = [...navLinks].sort((a, b) => b.href.length - a.href.length);
+    const sortedLinks = [...navList].sort((a, b) => b.href.length - a.href.length);
 
     // Find the most specific matching route
     const matchingLink = sortedLinks.find(link => {
@@ -52,8 +38,8 @@ export default function NavLinks() {
   };
 
   return (
-    <div className="h-full flex items-center justify-center">
-      {navLinks.map((item, index) => (
+    <div className={cn("sm:flex hidden h-full items-center justify-center", className)} {...props}>
+      {navList.map((item, index) => (
         <Link
           href={item.href}
           key={index}

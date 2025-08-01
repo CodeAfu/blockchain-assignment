@@ -3,7 +3,30 @@ import Link from "next/link";
 import Wallet from "./wallet";
 import { AppkitContextProvider } from "@/contexts/appkit-context";
 import NavLinks from "./nav-links";
+import MobileNavLinks from "./mobile-nav-links";
 
+const navList = [
+  {
+    label: "Home",
+    href: "/",
+  },
+  {
+    label: "Marketplace",
+    href: "/marketplace",
+  },
+  {
+    label: "Media",
+    href: "/media",
+  },
+  {
+    label: "Upload",
+    href: "/media/upload",
+  },
+  // {
+  //   label: "Test",
+  //   href: "/test",
+  // },
+];
 
 export default function Header() {
   return (
@@ -25,13 +48,16 @@ export default function Header() {
             </div>
           </Link>
 
-          <NavLinks />
+          <NavLinks navList={navList} />
         </div>
 
         {/* Right */}
-        <AppkitContextProvider>
-          <Wallet />
-        </AppkitContextProvider>
+        <div className="flex items-center gap-2">
+          <AppkitContextProvider>
+            <Wallet />
+            <MobileNavLinks navList={navList} />
+          </AppkitContextProvider>
+        </div>
       </div>
     </nav>
   );

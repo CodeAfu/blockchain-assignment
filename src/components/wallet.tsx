@@ -10,16 +10,17 @@ export default function Wallet() {
   return (
     <div>
       {isConnected ? (
-        <div className="flex flex-row-reverse items-center justify-center gap-3">
+        <div className="sm:flex hidden flex-row-reverse items-center justify-center gap-3">
           <Button onClick={handleDisconnect}>Disconnect</Button>
-          <div className="flex flex-col tracking-tight text-sm items-end justify-end">
+          <div className="md:flex hidden flex-col tracking-tight text-sm items-end justify-end">
             <span className="text-gray-500 text-xs">{address}</span>
             <span>{balance.toLocaleString()} ETH</span>
           </div>
-          {/* <appkit-account-button balance="show" /> */}
         </div>
       ) : (
-        <Button onClick={handleConnect}>Connect</Button>
+        <Button className="sm:flex hidden" onClick={handleConnect}>
+          Connect
+        </Button>
       )}
     </div>
   );

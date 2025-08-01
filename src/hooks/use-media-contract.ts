@@ -1,4 +1,3 @@
-// src/hooks/useMediaContract.ts
 import {
   useWriteContract,
   useReadContract,

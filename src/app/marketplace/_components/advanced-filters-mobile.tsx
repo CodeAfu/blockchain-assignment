@@ -1,9 +1,13 @@
+"use client";
+
 import { Button } from "@/components/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/shadcn-ui/dropdown-menu";
 import React, { startTransition } from "react";
 import {
@@ -21,8 +25,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/utils/shadcn-utils";
 
-
-export default function AdvancedFilters({
+export default function AdvancedFiltersMobile({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
@@ -57,48 +60,47 @@ export default function AdvancedFilters({
   const mediaTypeParam = (searchParams.get("mediaType") ?? "all") as MediaTypeFilter;
 
   return (
-    <div className={cn("flex gap-2", className)} {...props}>
+    <div className={cn("md:hidden", className)} {...props}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="text-xs px-2 py-1">
-            {mediaTypeLabels[mediaTypeParam]}
+          <Button variant="outline" className="w-full text-medio">
+            Filters
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className="w-[200px]">
+          <DropdownMenuLabel>MEDIA TYPE</DropdownMenuLabel>
           {mediaTypeOptions.map(type => (
-            <DropdownMenuItem key={type} onSelect={() => updateParam("mediaType", type)}>
+            <DropdownMenuItem
+              key={type}
+              onSelect={() => updateParam("mediaType", type)}
+              className={type === mediaTypeParam ? "font-semibold" : ""}
+            >
               {mediaTypeLabels[type]}
             </DropdownMenuItem>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-      {/* Sort Price Filter */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="text-xs px-2 py-1">
-            {sortPriceLabels[sortPriceParam]}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
+          <DropdownMenuSeparator />
+
+          <DropdownMenuLabel>SORT PRICE</DropdownMenuLabel>
           {sortPriceOptions.map(option => (
-            <DropdownMenuItem key={option} onSelect={() => updateParam("sortPrice", option)}>
+            <DropdownMenuItem
+              key={option}
+              onSelect={() => updateParam("sortPrice", option)}
+              className={option === sortPriceParam ? "font-semibold" : ""}
+            >
               {sortPriceLabels[option]}
             </DropdownMenuItem>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-      {/* Sort Date Filter */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="text-xs px-2 py-1">
-            {sortDateLabels[sortDateParam]}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
+          <DropdownMenuSeparator />
+
+          <DropdownMenuLabel>SORT DATE</DropdownMenuLabel>
           {sortDateOptions.map(option => (
-            <DropdownMenuItem key={option} onSelect={() => updateParam("sortDate", option)}>
+            <DropdownMenuItem
+              key={option}
+              onSelect={() => updateParam("sortDate", option)}
+              className={option === sortDateParam ? "font-semibold" : ""}
+            >
               {sortDateLabels[option]}
             </DropdownMenuItem>
           ))}
