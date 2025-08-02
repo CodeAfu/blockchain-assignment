@@ -39,10 +39,10 @@ export default function NavLinks({ navList, className, ...props }: NavLinksProps
 
   return (
     <div className={cn("sm:flex hidden h-full items-center justify-center", className)} {...props}>
-      {navList.map((item, index) => (
+      {navList.map((item) => (
         <Link
           href={item.href}
-          key={index}
+          key={item.href}
           className={cn(
             "flex px-4 h-full text-md transition-colors duration-200 items-center justify-center",
             isActiveLink(item.href)

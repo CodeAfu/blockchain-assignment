@@ -61,11 +61,11 @@ const FilterInput = React.forwardRef<HTMLInputElement, FilterInputProps>(
           onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          className={cn("w-full", className)}
+          className={cn("w-full bg-white", className)}
           {...props}
         />
-        <Button type="button" variant="outline" onClick={updateSearchParam}>
-          <Search className="w-4 h-4 mr-1" />
+        <Button size="icon" variant="outline" onClick={updateSearchParam}>
+          <Search className="w-4 h-4" />
         </Button>
       </div>
     );

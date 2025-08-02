@@ -1,20 +1,15 @@
-"use client";
-
 import { Button } from "@/components/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
 } from "@/components/shadcn-ui/dropdown-menu";
 import React, { startTransition } from "react";
 import {
   FilterSearchParams,
-  MediaTypeFilter,
   mediaTypeLabels,
-  mediaTypeOptions,
   SortDateFilterOptions,
   sortDateLabels,
   sortDateOptions,
@@ -25,7 +20,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/utils/shadcn-utils";
 
-export default function AdvancedFiltersMobile({
+export default function AdvancedFiltersOld({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
@@ -55,7 +50,11 @@ export default function AdvancedFiltersMobile({
     });
   };
 
-  // --- Media type logic for checkboxes ---
+  const sortDateParam = (searchParams.get("sortDate") ?? "newest") as SortDateFilterOptions;
+  const sortPriceParam = (searchParams.get("sortPrice") ?? "none") as SortPriceFilterOptions;
+  const mediaTypeOptions = ["audio", "image", "video"] as const;
+  type MediaTypeFilter = (typeof mediaTypeOptions)[number];
+
   const mediaTypeParamRaw = searchParams.get("mediaType");
   const mediaTypeSelected: MediaTypeFilter[] = mediaTypeParamRaw
     ? (mediaTypeParamRaw.split(",").filter(Boolean) as MediaTypeFilter[])
@@ -82,20 +81,24 @@ export default function AdvancedFiltersMobile({
     });
   };
 
-  const sortDateParam = (searchParams.get("sortDate") ?? "newest") as SortDateFilterOptions;
-  const sortPriceParam = (searchParams.get("sortPrice") ?? "none") as SortPriceFilterOptions;
+  const displayText =
+    mediaTypeSelected.length === 0 || mediaTypeSelected.length === mediaTypeOptions.length
+      ? "All Media"
+      : mediaTypeSelected
+          .slice(0, 2)
+          .map(t => mediaTypeLabels[t])
+          .join(", ") + (mediaTypeSelected.length > 2 ? "..." : "");
 
   return (
-    <div className={cn("md:hidden", className)} {...props}>
+    <div className={cn("flex gap-2", className)} {...props}>
+      {/* Media Type Filter */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-full text-medio">
-            Filters
+          <Button variant="ghost" className="text-xs px-2 py-1">
+            {displayText}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[220px]">
-          {/* Media Type */}
-          <DropdownMenuLabel>MEDIA TYPE</DropdownMenuLabel>
+        <DropdownMenuContent>
           {mediaTypeOptions.map(type => (
             <DropdownMenuCheckboxItem
               key={type}
@@ -106,33 +109,37 @@ export default function AdvancedFiltersMobile({
               {mediaTypeLabels[type]}
             </DropdownMenuCheckboxItem>
           ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-          <DropdownMenuSeparator />
-
-          {/* Sort Price */}
-          <DropdownMenuLabel>PRICE</DropdownMenuLabel>
+      {/* Sort Price Filter */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="text-xs px-2 py-1">
+            {sortPriceLabels[sortPriceParam]}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
           {sortPriceOptions.map(option => (
-            <DropdownMenuCheckboxItem
-              key={option}
-              checked={sortPriceParam === option}
-              onCheckedChange={() => updateParam("sortPrice", option)}
-            >
+            <DropdownMenuItem key={option} onSelect={() => updateParam("sortPrice", option)}>
               {sortPriceLabels[option]}
-            </DropdownMenuCheckboxItem>
+            </DropdownMenuItem>
           ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-          <DropdownMenuSeparator />
-
-          {/* Sort Date */}
-          <DropdownMenuLabel>DATE</DropdownMenuLabel>
+      {/* Sort Date Filter */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="text-xs px-2 py-1">
+            {sortDateLabels[sortDateParam]}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
           {sortDateOptions.map(option => (
-            <DropdownMenuCheckboxItem
-              key={option}
-              checked={sortDateParam === option}
-              onCheckedChange={() => updateParam("sortDate", option)}
-            >
+            <DropdownMenuItem key={option} onSelect={() => updateParam("sortDate", option)}>
               {sortDateLabels[option]}
-            </DropdownMenuCheckboxItem>
+            </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
       </DropdownMenu>

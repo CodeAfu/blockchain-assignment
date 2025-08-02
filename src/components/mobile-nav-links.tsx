@@ -30,10 +30,25 @@ export default function MobileNavLinks({ navList, className, ...props }: MobileN
   const { isConnected, address, balance, handleConnect, handleDisconnect } = useAppKitContext();
 
   const isActiveLink = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(href + "/");
-  };
+    if (href === "/") {
+      return pathname === "/";
+    }
 
+    // Sort navLinks by length (longest first) to prioritize more specific routes
+    const sortedLinks = [...navList].sort((a, b) => b.href.length - a.href.length);
+
+    // Find the most specific matching route
+    const matchingLink = sortedLinks.find(link => {
+      if (link.href === "/") {
+        return pathname === "/";
+      }
+      return pathname === link.href || pathname.startsWith(link.href + "/");
+    });
+
+    // Return true only if this href is the most specific match
+    return matchingLink?.href === href;
+  };
+  
   return (
     <div className={cn("sm:hidden", className)} {...props}>
       <Sheet>
