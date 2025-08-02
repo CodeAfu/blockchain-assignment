@@ -1,5 +1,3 @@
-"use client";
-
 import { shimmerBlur } from "@/utils/blur";
 import { cn } from "@/utils/shadcn-utils";
 import { PlaceholderValue } from "next/dist/shared/lib/get-img-props";

@@ -5,7 +5,6 @@ import React from "react";
 import { cn } from "@/utils/shadcn-utils";
 import { MarketplaceCard } from "./marketplace-card";
 
-
 export default function MarketplaceGrid({
   className,
   ...props
@@ -24,7 +23,8 @@ export default function MarketplaceGrid({
       )}
       {...props}
     >
-      <div className="absolute inset-0 -z-10 text-muted bg-[url('/assets/bg/dots-bg.svg')] bg-cover opacity-30" />
+      {/* <div className="absolute inset-0 -z-10 text-muted bg-[url('/assets/bg/dots-bg.svg')] bg-cover opacity-30" /> */}
+      <div className="absolute inset-0 -z-10 bg-[url('/assets/bg/diagonal-lines.svg')] bg-repeat bg-[length:5px_5px] opacity-10" />
 
       {dummyData.map((item, i) => (
         <MarketplaceCard

@@ -3,7 +3,9 @@ import React from "react";
 
 export default function HeroSection() {
   return (
-    <div className="w-full flex items-center justify-center bg-background">
+    <div className="relative w-full flex items-center justify-center">
+      {/* <div className="absolute inset-0 -z-10 text-muted bg-[url('/assets/bg/dots-bg.svg')] bg-cover opacity-10" /> */}
+
       <div className="max-w-4xl mx-auto px-6 py-20 text-center">
         {/* Badge */}
         <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
@@ -28,7 +30,7 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
           <Link
-            href="/upload"
+            href="/media/upload"
             className="group relative bg-primary text-primary-foreground font-semibold px-8 py-4 rounded-xl hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
             <span className="relative z-10">Start Creating</span>
@@ -36,8 +38,8 @@ export default function HeroSection() {
           </Link>
 
           <Link
-            href="/media/browse"
-            className="group border-2 border-border text-foreground font-semibold px-8 py-4 rounded-xl hover:bg-accent hover:border-accent-foreground/20 transition-all duration-300"
+            href="/marketplace"
+            className="group bg-background border-2 border-border text-foreground font-semibold px-8 py-4 rounded-xl hover:bg-accent hover:border-accent-foreground/20 transition-all duration-300"
           >
             <span>Explore Marketplace</span>
             <span className="inline-block ml-2 transform group-hover:translate-x-1 transition-transform duration-300">

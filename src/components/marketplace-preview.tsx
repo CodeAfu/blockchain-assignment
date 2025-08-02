@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { SkeletonCard } from "./skeleton-card";
 import { getAllMediaWithURI } from "@/actions/db-actions";
 import { $Enums, FileType } from "@prisma/client";
 import NextImage from "./next-image";
 
-// Lazy load heavy components
 const LazyVideo = dynamic(
   () =>
     Promise.resolve(({ src, className }: { src: string; className: string }) => (
@@ -33,17 +33,42 @@ interface MediaItem {
   creator: string;
 }
 
-export default function MarketplacePreview() {
-  const [nfts, setNfts] = useState<MediaItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const fetchMediaData = async (limit: number): Promise<MediaItem[]> => {
+  const queryResult = await getAllMediaWithURI(limit);
 
-  // Memoize the media rendering function
+  return queryResult
+    .map(item => ({
+      id: item.tokenId,
+      title: item.title,
+      description: item.description || "",
+      mediaType: item.fileType,
+      mediaUrl: item.tempAccessUri,
+      creator: item.creatorAddress,
+    }))
+    .filter(item => item.mediaUrl);
+};
+
+export default function MarketplacePreview() {
+  const {
+    data: nfts = [],
+    isLoading,
+    error,
+    isError,
+  } = useQuery({
+    queryKey: ["featured-media", 3],
+    queryFn: () => fetchMediaData(3),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: 2,
+    // retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
   const renderMedia = useCallback((nft: MediaItem) => {
     switch (nft.mediaType) {
       case FileType.IMAGE:
         return (
           <div className="relative w-full h-48 rounded overflow-hidden">
-            <NextImage src={nft.mediaUrl} alt={nft.title} />
+            <NextImage className="shrink-0" src={nft.mediaUrl} alt={nft.title} />
           </div>
         );
       case FileType.VIDEO:
@@ -64,58 +89,47 @@ export default function MarketplacePreview() {
     }
   }, []);
 
-  // Optimize data fetching
-  const fetchFromDb = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const queryResult = await getAllMediaWithURI(3);
-
-      // Process data more efficiently
-      const fetchData = queryResult
-        .map(item => ({
-          id: item.tokenId,
-          title: item.title,
-          description: item.description || "",
-          mediaType: item.fileType,
-          mediaUrl: item.tempAccessUri,
-          creator: item.creatorAddress,
-        }))
-        .filter(item => item.mediaUrl); // Filter out items without media URLs
-
-      setNfts(fetchData);
-    } catch (error) {
-      console.error("Failed to fetch media:", error);
-      setNfts([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchFromDb();
-  }, [fetchFromDb]);
-
   // Memoize the grid items to prevent unnecessary re-renders
-  const nftGrid = useMemo(
+  const nftList = useMemo(
     () =>
       nfts.map(nft => (
         <div
           key={nft.id}
-          className="bg-white dark:bg-purple-950 rounded-xl shadow p-4 hover:shadow-lg transition-shadow"
+          className="shrink-0 w-full max-w-xs h-80 flex flex-col bg-white/10 backdrop-blur rounded-xl shadow overflow-hidden hover:shadow-lg transition-shadow"
         >
-          {renderMedia(nft)}
-          <div className="mt-4">
-            <h3 className="text-xl font-semibold truncate" title={nft.title}>
+          <div className="shrink-0 relative w-full aspect-video bg-muted">{renderMedia(nft)}</div>
+
+          <div className="flex-1 flex flex-col p-4 gap-1">
+            <p className="text-base font-semibold truncate" title={nft.title}>
               {nft.title}
-            </h3>
-            <p className="text-sm text-gray-500 truncate" title={nft.creator}>
-              Creator: {nft.creator}
             </p>
+            <p className="text-xs text-gray-400 truncate" title={nft.creator}>
+              {nft.creator}
+            </p>
+            {nft.description && (
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-3">{nft.description}</p>
+            )}
           </div>
         </div>
       )),
     [nfts, renderMedia]
   );
+
+  if (isError) {
+    return (
+      <section className="py-16 px-6 bg-background/10">
+        <h2 className="text-3xl font-bold text-center mb-10">Featured Media</h2>
+        <div className="flex justify-center items-center w-full min-h-[300px]">
+          <div className="text-center">
+            <p className="text-red-400 mb-4">Failed to load media</p>
+            <p className="text-sm text-gray-400">
+              {error instanceof Error ? error.message : "An unexpected error occurred"}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 px-6 bg-background/10">
@@ -132,8 +146,10 @@ export default function MarketplacePreview() {
           </div>
         </div>
       ) : (
-        <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {nftGrid}
+        <div className="mx-auto w-full max-w-7xl overflow-hidden">
+          <div className="flex sm:flex-row flex-col gap-8 py-4 items-center justify-center overflow-x-auto px-2">
+            {nftList}
+          </div>
         </div>
       )}
     </section>

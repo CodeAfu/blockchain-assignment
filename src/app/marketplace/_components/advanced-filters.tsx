@@ -26,6 +26,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/utils/shadcn-utils";
 import { Input } from "@/components/shadcn-ui/input";
 import { SlidersHorizontal } from "lucide-react";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function AdvancedFilters({
   className,
@@ -52,12 +53,16 @@ export default function AdvancedFilters({
     } else {
       const numValue = Number(value);
       const currentMin = Number(searchParams.get("minPrice"));
+      const currentMax = Number(searchParams.get("maxPrice"));
 
       // Skip setting invalid price values
       if ((key === "minPrice" || key === "maxPrice") && numValue < 0) {
         params.delete(key);
       } else if (key === "maxPrice" && !isNaN(currentMin) && numValue <= currentMin) {
         params.delete(key);
+      } else if (key === "minPrice" && !isNaN(currentMax) && numValue >= currentMax) {
+        params.delete("maxPrice");
+        params.set(key, String(value));
       } else {
         params.set(key, String(value));
       }
@@ -68,7 +73,6 @@ export default function AdvancedFilters({
     });
   };
 
-  // --- Media type logic for checkboxes ---
   const mediaTypeParamRaw = searchParams.get("mediaType");
   const mediaTypeSelected: MediaTypeFilter[] = mediaTypeParamRaw
     ? (mediaTypeParamRaw.split(",").filter(Boolean) as MediaTypeFilter[])
@@ -94,6 +98,13 @@ export default function AdvancedFilters({
       router.push(`?${params.toString()}`);
     });
   };
+
+  const updateParamDebounced = useDebouncedCallback(
+    <K extends keyof FilterSearchParams>(key: K, value: FilterSearchParams[K]) => {
+      updateParam(key, value);
+    },
+    300
+  );
 
   const sortDateParam = (searchParams.get("sortDate") ?? "newest") as SortDateFilterOptions;
   const sortPriceParam = (searchParams.get("sortPrice") ?? "none") as SortPriceFilterOptions;
@@ -151,7 +162,7 @@ export default function AdvancedFilters({
           <DropdownMenuSeparator />
 
           {/* Min/Max Price Inputs */}
-          <DropdownMenuLabel>SET PRICE RANGE</DropdownMenuLabel>
+          <DropdownMenuLabel>PRICE RANGE</DropdownMenuLabel>
           <div className="px-2 py-1 space-y-2">
             <Input
               type="number"
@@ -159,7 +170,7 @@ export default function AdvancedFilters({
               className="h-8"
               step={0.05}
               defaultValue={searchParams.get("minPrice") ?? ""}
-              onBlur={e => updateParam("minPrice", e.target.value)}
+              onChange={e => updateParamDebounced("minPrice", e.target.value)}
             />
             <Input
               type="number"
@@ -167,7 +178,7 @@ export default function AdvancedFilters({
               className="h-8"
               step={0.05}
               defaultValue={searchParams.get("maxPrice") ?? ""}
-              onBlur={e => updateParam("maxPrice", e.target.value)}
+              onChange={e => updateParamDebounced("maxPrice", e.target.value)}
             />
           </div>
         </DropdownMenuContent>
